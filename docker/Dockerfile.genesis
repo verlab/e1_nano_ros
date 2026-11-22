@@ -1,0 +1,4 @@
+# Optional: Genesis backend (GPU) for large swarms / RL.  Needs NVIDIA Container Toolkit.
+#   docker build -f docker/Dockerfile.genesis -t e1_nano_ros:genesis .
+FROM e1_nano_ros:jazzy
+RUN pip3 install --no-cache-dir torch genesis-world

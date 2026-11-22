@@ -1,0 +1,58 @@
+site_name: E1 Nano ROS — enxame de mini-drones ESP32
+site_description: Driver ROS 2, firmware Zenoh, simulação MuJoCo/Genesis e tutoriais para o Cherglow E1 Nano
+site_url: https://verlab.github.io/e1_nano_ros/
+repo_url: https://github.com/verlab/e1_nano_ros
+repo_name: verlab/e1_nano_ros
+edit_uri: edit/main/docs/
+copyright: VeRLab — DCC/UFMG · código Apache-2.0 · modelo/firmware sob licenças de origem
+theme:
+  name: material
+  language: pt-BR
+  palette:
+    - scheme: default
+      primary: deep orange
+      accent: amber
+      toggle: { icon: material/weather-night, name: Modo escuro }
+    - scheme: slate
+      primary: deep orange
+      accent: amber
+      toggle: { icon: material/weather-sunny, name: Modo claro }
+  features: [navigation.tabs, navigation.sections, navigation.top, content.code.copy, content.tabs.link, search.highlight]
+  icon: { repo: fontawesome/brands/github }
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc: { permalink: true }
+  - pymdownx.details
+  - pymdownx.highlight: { anchor_linenums: true }
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed: { alternate_style: true }
+  - pymdownx.superfences:
+      custom_fences:
+        - { name: mermaid, class: mermaid, format: !!python/name:pymdownx.superfences.fence_code_format }
+nav:
+  - Início: index.md
+  - Primeiros passos:
+      - Instalação: instalacao.md
+      - Simulação em 5 minutos: tutorial/01-simulacao.md
+  - Tutorial:
+      - 1. Simulação (sem ROS): tutorial/01-simulacao.md
+      - 2. ROS 2 + RViz: tutorial/02-ros2.md
+      - 3. Firmware e primeiro voo: tutorial/03-firmware.md
+      - 4. Voo real com captura de movimento: tutorial/04-voo-real.md
+      - 5. Enxame: tutorial/05-enxame.md
+      - 6. Genesis e aprendizado por reforço: tutorial/06-genesis.md
+      - 7. Escrevendo seu próprio controlador: tutorial/07-controlador.md
+  - Referência:
+      - Arquitetura: arquitetura.md
+      - Escolha do middleware: middleware.md
+      - Protocolo Zenoh: protocolo.md
+      - API ROS 2: ros-api.md
+      - Hardware e modelo 3D: hardware.md
+      - Simulação: simulacao.md
+      - Firmware: firmware.md
+      - Segurança de voo: seguranca.md
+  - FAQ: faq.md
+  - Contribuindo: contribuindo.md

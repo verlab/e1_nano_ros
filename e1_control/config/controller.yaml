@@ -1,0 +1,13 @@
+e1_swarm_controller:
+  ros__parameters:
+    ids: [0]                 # [0] = follow /e1/swarm_status (every discovered drone)
+    namespace_prefix: "e1_"
+    rate: 50.0               # Hz, attitude commands per drone
+    world_frame: "world"
+    mass: 0.0251             # kg
+    max_thrust: 0.216        # N per motor at duty 1
+    kp: [4.0, 4.0, 5.0]
+    kd: [3.0, 3.0, 3.5]
+    ki: [0.4, 0.4, 1.2]
+    tilt_max_deg: 25.0
+    min_separation: 0.25     # m, simple repulsion between drones (0 = off)

@@ -1,0 +1,143 @@
+<mujoco model="e1_nano">
+  <!-- Cherglow E1 Nano v1.5Y (ESP32-S3 SuperMini) mini quadcopter, generated from the real PCB.
+       Body frame FLU, origin = PCB centre / mid-plane. Wheelbase 50 mm, mass ~25 g.
+       Actuators: thrust in newtons at each rotor (0..0.216 N ≈ 22 gf, ESTIMATED for 0716 coreless + 31 mm prop, 1S).
+       Yaw reaction torque = kM/kF * thrust with kM/kF = 0.005 m; sign from spin direction.
+       Actuator order = CF-Drone motor index: 0 RL(CCW), 1 RR(CW), 2 FR(CCW), 3 FL(CW). -->
+  <compiler angle="radian" meshdir="../meshes/visual" inertiafromgeom="false" balanceinertia="true"/>
+  <option timestep="0.001" density="1.204" viscosity="1.8e-5" integrator="implicitfast"/>
+  <visual><global offwidth="1600" offheight="1200"/><quality shadowsize="4096"/><headlight ambient="0.3 0.3 0.3" diffuse="0.25 0.25 0.25" specular="0.05 0.05 0.05"/></visual>
+  <default>
+    <default class="vis"><geom type="mesh" contype="0" conaffinity="0" group="2" mass="0"/></default>
+    <default class="col"><geom group="3" rgba="0.9 0.2 0.2 0.3" friction="0.8 0.02 0.001" solref="0.004 1" mass="0"/></default>
+  </default>
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" mark="edge" rgb1="0.80 0.81 0.83" rgb2="0.72 0.73 0.75" markrgb="0.55 0.56 0.6" width="512" height="512"/>
+    <texture name="sky" type="skybox" builtin="gradient" rgb1="0.75 0.82 0.92" rgb2="0.98 0.98 1.0" width="512" height="512"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.0"/>
+    <material name="pcb" rgba="0.035 0.035 0.04 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="pad" rgba="0.78 0.78 0.76 1" specular="0.9" shininess="0.9" reflectance="0.15"/>
+    <material name="silk" rgba="0.93 0.93 0.93 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="ic" rgba="0.08 0.08 0.09 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="cap" rgba="0.62 0.5 0.34 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="metal" rgba="0.8 0.8 0.82 1" specular="0.9" shininess="0.9" reflectance="0.15"/>
+    <material name="led" rgba="0.95 0.95 0.88 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="red" rgba="0.8 0.08 0.06 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="white" rgba="0.95 0.95 0.93 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="gold" rgba="0.85 0.68 0.3 1" specular="0.9" shininess="0.9" reflectance="0.15"/>
+    <material name="battery" rgba="0.15 0.25 0.55 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="velcro" rgba="0.05 0.05 0.05 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="wire_r" rgba="0.75 0.05 0.05 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="wire_b" rgba="0.05 0.05 0.08 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="motor" rgba="0.72 0.73 0.75 1" specular="0.9" shininess="0.9" reflectance="0.15"/>
+    <material name="rubber" rgba="0.06 0.06 0.06 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="wire_w" rgba="0.92 0.92 0.92 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="wire_u" rgba="0.05 0.2 0.75 1" specular="0.25" shininess="0.3" reflectance="0"/>
+    <material name="prop" rgba="0.7 0.82 0.92 0.55" specular="0.25" shininess="0.3" reflectance="0"/>
+    <mesh name="base_link__pcb" file="base_link__pcb.stl"/>
+    <mesh name="base_link__pad" file="base_link__pad.stl"/>
+    <mesh name="base_link__silk" file="base_link__silk.stl"/>
+    <mesh name="base_link__ic" file="base_link__ic.stl"/>
+    <mesh name="base_link__cap" file="base_link__cap.stl"/>
+    <mesh name="base_link__metal" file="base_link__metal.stl"/>
+    <mesh name="base_link__led" file="base_link__led.stl"/>
+    <mesh name="base_link__red" file="base_link__red.stl"/>
+    <mesh name="base_link__white" file="base_link__white.stl"/>
+    <mesh name="base_link__gold" file="base_link__gold.stl"/>
+    <mesh name="base_link__battery" file="base_link__battery.stl"/>
+    <mesh name="base_link__velcro" file="base_link__velcro.stl"/>
+    <mesh name="base_link__wire_r" file="base_link__wire_r.stl"/>
+    <mesh name="base_link__wire_b" file="base_link__wire_b.stl"/>
+    <mesh name="base_link__motor" file="base_link__motor.stl"/>
+    <mesh name="base_link__rubber" file="base_link__rubber.stl"/>
+    <mesh name="base_link__wire_w" file="base_link__wire_w.stl"/>
+    <mesh name="base_link__wire_u" file="base_link__wire_u.stl"/>
+    <mesh name="rotor_front_left__prop" file="rotor_front_left__prop.stl"/>
+    <mesh name="rotor_front_left__metal" file="rotor_front_left__metal.stl"/>
+    <mesh name="rotor_front_right__prop" file="rotor_front_right__prop.stl"/>
+    <mesh name="rotor_front_right__metal" file="rotor_front_right__metal.stl"/>
+    <mesh name="rotor_rear_left__prop" file="rotor_rear_left__prop.stl"/>
+    <mesh name="rotor_rear_left__metal" file="rotor_rear_left__metal.stl"/>
+    <mesh name="rotor_rear_right__prop" file="rotor_rear_right__prop.stl"/>
+    <mesh name="rotor_rear_right__metal" file="rotor_rear_right__metal.stl"/>
+  </asset>
+
+  <worldbody>
+    <light name="sun" pos="0 0 5" dir="0.2 0.3 -1" directional="true" castshadow="false" diffuse="0.35 0.35 0.35"/>
+    <light name="spot" pos="0 0 3.5" dir="0 0 -1" cutoff="60" exponent="1" castshadow="true" diffuse="0.3 0.3 0.3"/>
+    <geom name="floor" type="plane" size="6 6 0.05" material="grid"/>
+    <body name="base_link" pos="0 0 0.0197">
+      <freejoint name="root"/>
+      <inertial pos="-0.000314588 6.12476e-07 -0.00125919" mass="0.0225" fullinertia="4.45277e-06 4.77647e-06 8.06427e-06 7.94275e-10 3.54596e-08 1.11623e-10"/>
+      <geom class="vis" mesh="base_link__pcb" material="pcb"/>
+      <geom class="vis" mesh="base_link__pad" material="pad"/>
+      <geom class="vis" mesh="base_link__silk" material="silk"/>
+      <geom class="vis" mesh="base_link__ic" material="ic"/>
+      <geom class="vis" mesh="base_link__cap" material="cap"/>
+      <geom class="vis" mesh="base_link__metal" material="metal"/>
+      <geom class="vis" mesh="base_link__led" material="led"/>
+      <geom class="vis" mesh="base_link__red" material="red"/>
+      <geom class="vis" mesh="base_link__white" material="white"/>
+      <geom class="vis" mesh="base_link__gold" material="gold"/>
+      <geom class="vis" mesh="base_link__battery" material="battery"/>
+      <geom class="vis" mesh="base_link__velcro" material="velcro"/>
+      <geom class="vis" mesh="base_link__wire_r" material="wire_r"/>
+      <geom class="vis" mesh="base_link__wire_b" material="wire_b"/>
+      <geom class="vis" mesh="base_link__motor" material="motor"/>
+      <geom class="vis" mesh="base_link__rubber" material="rubber"/>
+      <geom class="vis" mesh="base_link__wire_w" material="wire_w"/>
+      <geom class="vis" mesh="base_link__wire_u" material="wire_u"/>
+      <geom name="base_link_pcb_core" class="col" type="box" size="0.013 0.013 0.0006" pos="0 0 0" quat="1 0 0 0"/>
+      <geom name="base_link_arm_0" class="col" type="box" size="0.035 0.0055 0.0006" pos="0 0 0" quat="0.92388 0 0 0.382683"/>
+      <geom name="base_link_arm_1" class="col" type="box" size="0.035 0.0055 0.0006" pos="0 0 0" quat="0.92388 0 0 -0.382683"/>
+      <geom name="base_link_esp32_stack" class="col" type="box" size="0.01125 0.01175 0.002025" pos="0 0 0.002625" quat="1 0 0 0"/>
+      <geom name="base_link_battery" class="col" type="box" size="0.012 0.01175 0.00355" pos="0 0 -0.00545" quat="1 0 0 0"/>
+      <geom name="base_link_motor_front_left" class="col" type="cylinder" size="0.0045 0.008" pos="0.0176784 0.0176784 0.00194154" quat="1 0 0 0"/>
+      <geom name="base_link_leg_front_left" class="col" type="box" size="0.0092 0.0006 0.0105951" pos="0.0176784 0.0176784 -0.00829513" quat="0.92388 0 0 0.382683"/>
+      <geom name="base_link_motor_front_right" class="col" type="cylinder" size="0.0045 0.008" pos="0.0176784 -0.0176784 0.00194154" quat="1 0 0 0"/>
+      <geom name="base_link_leg_front_right" class="col" type="box" size="0.0092 0.0006 0.0105951" pos="0.0176784 -0.0176784 -0.00829513" quat="0.92388 0 0 -0.382683"/>
+      <geom name="base_link_motor_rear_left" class="col" type="cylinder" size="0.0045 0.008" pos="-0.0176784 0.0176784 0.00194154" quat="1 0 0 0"/>
+      <geom name="base_link_leg_rear_left" class="col" type="box" size="0.0092 0.0006 0.0105951" pos="-0.0176784 0.0176784 -0.00829513" quat="0.382686 0 0 0.923879"/>
+      <geom name="base_link_motor_rear_right" class="col" type="cylinder" size="0.0045 0.008" pos="-0.0176784 -0.0176784 0.00194154" quat="1 0 0 0"/>
+      <geom name="base_link_leg_rear_right" class="col" type="box" size="0.0092 0.0006 0.0105951" pos="-0.0176784 -0.0176784 -0.00829513" quat="0.382686 0 0 -0.923879"/>
+      <site name="imu" pos="0.00712216 1.27e-05 0.00108" size="0.001"/>
+      <body name="rotor_rear_left" pos="-0.0176784 0.0176784 0.0110415">
+        <inertial pos="0 0 0.00205546" mass="0.00065" fullinertia="1.79769e-08 1.79769e-08 3.49681e-08 0 0 0"/>
+        <geom class="vis" mesh="rotor_rear_left__prop" material="prop"/>
+        <geom class="vis" mesh="rotor_rear_left__metal" material="metal"/>
+        <site name="thrust_rear_left" pos="0 0 0.002" size="0.001"/>
+      </body>
+      <body name="rotor_rear_right" pos="-0.0176784 -0.0176784 0.0110415">
+        <inertial pos="0 0 0.00205546" mass="0.00065" fullinertia="1.79769e-08 1.79769e-08 3.49681e-08 0 0 0"/>
+        <geom class="vis" mesh="rotor_rear_right__prop" material="prop"/>
+        <geom class="vis" mesh="rotor_rear_right__metal" material="metal"/>
+        <site name="thrust_rear_right" pos="0 0 0.002" size="0.001"/>
+      </body>
+      <body name="rotor_front_right" pos="0.0176784 -0.0176784 0.0110415">
+        <inertial pos="0 0 0.00205546" mass="0.00065" fullinertia="1.79769e-08 1.79769e-08 3.49681e-08 0 0 0"/>
+        <geom class="vis" mesh="rotor_front_right__prop" material="prop"/>
+        <geom class="vis" mesh="rotor_front_right__metal" material="metal"/>
+        <site name="thrust_front_right" pos="0 0 0.002" size="0.001"/>
+      </body>
+      <body name="rotor_front_left" pos="0.0176784 0.0176784 0.0110415">
+        <inertial pos="0 0 0.00205546" mass="0.00065" fullinertia="1.79769e-08 1.79769e-08 3.49681e-08 0 0 0"/>
+        <geom class="vis" mesh="rotor_front_left__prop" material="prop"/>
+        <geom class="vis" mesh="rotor_front_left__metal" material="metal"/>
+        <site name="thrust_front_left" pos="0 0 0.002" size="0.001"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="rear_left" site="thrust_rear_left" gear="0 0 1 0 0 -0.005" ctrllimited="true" ctrlrange="0 0.216"/>
+    <motor name="rear_right" site="thrust_rear_right" gear="0 0 1 0 0 0.005" ctrllimited="true" ctrlrange="0 0.216"/>
+    <motor name="front_right" site="thrust_front_right" gear="0 0 1 0 0 -0.005" ctrllimited="true" ctrlrange="0 0.216"/>
+    <motor name="front_left" site="thrust_front_left" gear="0 0 1 0 0 0.005" ctrllimited="true" ctrlrange="0 0.216"/>
+  </actuator>
+
+  <sensor>
+    <gyro name="gyro" site="imu"/>
+    <accelerometer name="accel" site="imu"/>
+    <framequat name="attitude" objtype="site" objname="imu"/>
+  </sensor>
+</mujoco>

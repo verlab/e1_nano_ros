@@ -1,0 +1,4 @@
+string command   # CF-Drone CLI line, e.g. "p CTL_TRIM_ROLL 0.01" or "ps"
+---
+bool success
+string message

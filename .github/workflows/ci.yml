@@ -1,0 +1,78 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  core:
+    name: e1_core (pytest, sim + zenoh)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: sudo apt-get update && sudo apt-get install -y libegl1 libosmesa6
+      - run: pip install -r e1_core/requirements.txt pytest flake8
+      - run: flake8 --max-line-length 140 --extend-ignore E731,E702,E741,W503,E226 e1_core e1_bridge e1_control e1_bringup examples
+      - run: cd e1_core && E1_DESCRIPTION_DIR=$GITHUB_WORKSPACE/e1_description MUJOCO_GL=egl python -m pytest -q
+
+  ros:
+    name: colcon (${{ matrix.distro }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: { distro: [jazzy, kilted] }
+    container: ros:${{ matrix.distro }}-ros-base
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: src/e1_nano_ros }
+      - name: deps
+        run: |
+          apt-get update
+          apt-get install -y python3-pip ros-${{ matrix.distro }}-rmw-zenoh-cpp ros-${{ matrix.distro }}-robot-state-publisher \
+            ros-${{ matrix.distro }}-tf2-ros ros-${{ matrix.distro }}-rviz2 libegl1
+          pip3 install --break-system-packages -r src/e1_nano_ros/e1_core/requirements.txt
+      - name: build + test
+        shell: bash
+        run: |
+          source /opt/ros/${{ matrix.distro }}/setup.bash
+          colcon build --event-handlers console_direct+
+          source install/setup.bash
+          ros2 interface show e1_msgs/msg/FlightState
+          python3 -c "import e1_bridge.bridge_node, e1_control.swarm_controller, e1_control.missions"
+      - name: smoke test (sim + bridge + controller)
+        shell: bash
+        run: |
+          source install/setup.bash
+          export RMW_IMPLEMENTATION=rmw_zenoh_cpp MUJOCO_GL=egl
+          ros2 run rmw_zenoh_cpp rmw_zenohd & sleep 2
+          ros2 run e1_core e1-sim -n 2 --duration 40 & sleep 3
+          ros2 run e1_bridge e1_bridge & ros2 run e1_control swarm_controller & sleep 6
+          ros2 topic echo --once /e1_1/state
+          ros2 service call /e1/takeoff_all e1_msgs/srv/Takeoff "{height: 0.4, duration: 2.0}"
+          sleep 5
+          python3 - <<'PY'
+          import rclpy
+          from rclpy.node import Node
+          from geometry_msgs.msg import PoseStamped
+          rclpy.init(); n = Node('check'); z = {}
+          for i in (1, 2):
+              n.create_subscription(PoseStamped, f'/e1_{i}/pose', lambda m, i=i: z.__setitem__(i, m.pose.position.z), 10)
+          end = n.get_clock().now().nanoseconds + 3e9
+          while n.get_clock().now().nanoseconds < end: rclpy.spin_once(n, timeout_sec=0.1)
+          print('altitudes', z); assert all(abs(v - 0.4) < 0.08 for v in z.values()) and len(z) == 2
+          PY
+
+  firmware:
+    name: firmware (PlatformIO)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: recursive }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install platformio && sudo apt-get install -y cmake
+      - run: firmware/test/host_check/run.sh 1.10.1
+      - run: cd firmware && pio run -e e1_nano
+      - uses: actions/upload-artifact@v4
+        with: { name: e1_nano_firmware, path: firmware/.pio/build/e1_nano/firmware*.bin }

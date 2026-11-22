@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+install/
+log/
+site/
+.venv/
+*.mp4
+!docs/assets/*.mp4
+firmware/.pio/
+firmware/.e1_src/

@@ -1,0 +1,5 @@
+string name   # CF-Drone parameter name (max 16 chars), e.g. CTL_TRIM_ROLL
+float32 value
+---
+bool success
+string message

@@ -1,0 +1,4 @@
+uint8 mode   # FlightState.RAW .. FlightState.AUTO
+---
+bool success
+string message

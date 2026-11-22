@@ -1,0 +1,13 @@
+# Physical parameters of the E1 Nano model (see docs/hardware.md for where each number comes from)
+mass: 0.0251                 # kg, with 1S 250 mAh LiPo under the PCB
+wheelbase: 0.050             # m, motor-to-motor diagonal (official spec, PCB measured 50.0 mm)
+pcb: {size: [0.0509, 0.0509], thickness: 0.0012}
+motor: {type: '0716 coreless', diameter: 0.007, length: 0.016}
+propeller: {diameter: 0.031, blades: 4}
+thrust_max_per_motor: 0.216  # N at duty 1 / 4.2 V (ESTIMATE, ~22 gf)
+max_rpm: 38000               # ESTIMATE
+kf_rpm: 1.496e-10            # N / rpm^2
+km_over_kf: 0.005            # m
+motor_time_constant: 0.02    # s
+motor_order: [rear_left, rear_right, front_right, front_left]   # CF-Drone indexes 0..3
+motor_spin: [ccw, cw, ccw, cw]                                    # seen from above

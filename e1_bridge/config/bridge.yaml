@@ -1,0 +1,11 @@
+e1_bridge:
+  ros__parameters:
+    zenoh_connect: "tcp/127.0.0.1:7447"   # rmw_zenohd router (same fabric as ROS 2 when RMW_IMPLEMENTATION=rmw_zenoh_cpp)
+    ids: [0]                              # [0] = auto-discover every e1/*/alive drone
+    namespace_prefix: "e1_"               # topics under /e1_<id>/...
+    world_frame: "world"
+    publish_tf: true
+    publish_joint_states: true
+    # Real drones: relay motion-capture poses to the drones' key space (e1/<id>/pose).
+    # Leave empty in simulation (the simulator publishes ground truth itself).
+    mocap_topic: ""                       # e.g. "/vrpn_mocap/e1_{id}/pose" (geometry_msgs/PoseStamped)

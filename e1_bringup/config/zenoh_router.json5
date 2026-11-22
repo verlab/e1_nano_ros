@@ -1,0 +1,11 @@
+// Zenoh router for an E1 swarm (start with: ZENOH_ROUTER_CONFIG_URI=<this file> ros2 run rmw_zenoh_cpp rmw_zenohd)
+// Drones (zenoh-pico, client mode) connect over TCP to port 7447 of the ground station.
+{
+  mode: "router",
+  listen: { endpoints: ["tcp/[::]:7447"] },
+  scouting: { multicast: { enabled: false } },   // WiFi multicast is unreliable with many drones
+  transport: {
+    unicast: { max_links: 1, max_sessions: 512 },       // plenty of room for large swarms
+    link: { tx: { lease: 3000, keep_alive: 3 } },
+  },
+}

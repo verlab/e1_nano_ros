@@ -1,0 +1,5 @@
+float32 height     # m above the current position
+float32 duration   # s
+---
+bool success
+string message

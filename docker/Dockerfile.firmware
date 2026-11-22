@@ -1,0 +1,8 @@
+# Build / flash the E1 Nano firmware (CF-Drone + Zenoh link) without installing PlatformIO locally
+#   docker compose run --rm firmware pio run                      # build
+#   docker compose run --rm --device /dev/ttyACM0 firmware pio run -t upload
+FROM python:3.12-slim
+RUN apt-get update && apt-get install -y --no-install-recommends git cmake build-essential udev \
+    && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir platformio
+WORKDIR /firmware
+CMD ["pio", "run"]

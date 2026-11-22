@@ -1,0 +1,75 @@
+# E1 Nano stack.  Quick start (simulation, 4 drones, formation mission):
+#   docker compose build
+#   docker compose up router sim bridge controller
+#   docker compose run --rm tools python3 src/e1_nano_ros/examples/swarm_formation.py --n 4
+# GUI (RViz) on Linux:  xhost +local:docker && docker compose --profile gui up rviz
+x-ros: &ros
+  image: e1_nano_ros:${ROS_DISTRO:-jazzy}
+  build: { context: ., dockerfile: docker/Dockerfile, args: { ROS_DISTRO: "${ROS_DISTRO:-jazzy}" } }
+  network_mode: host          # drones on the WiFi reach the router on <host-ip>:7447
+  ipc: host
+  environment:
+    RMW_IMPLEMENTATION: rmw_zenoh_cpp
+    ZENOH_ROUTER_CHECK_ATTEMPTS: "-1"
+    E1_N: "${E1_N:-4}"
+
+services:
+  router:                     # Zenoh router shared by ROS 2 (rmw_zenoh) and the drones
+    <<: *ros
+    command: ros2 run rmw_zenoh_cpp rmw_zenohd
+    environment:
+      ZENOH_ROUTER_CONFIG_URI: /ws/install/e1_bringup/share/e1_bringup/config/zenoh_router.json5
+
+  sim:                        # MuJoCo software-in-the-loop, N drones
+    <<: *ros
+    depends_on: [router]
+    command: bash -c 'sleep 2 && ros2 run e1_core e1-sim -n $${E1_N} --layout grid'
+
+  bridge:                     # ROS 2 driver (auto-discovers drones)
+    <<: *ros
+    depends_on: [router]
+    command: bash -c 'sleep 2 && ros2 run e1_bridge e1_bridge'
+
+  controller:                 # position control / services takeoff, land, goto
+    <<: *ros
+    depends_on: [bridge]
+    command: bash -c 'sleep 3 && ros2 run e1_control swarm_controller'
+
+  mission:                    # example mission (formation)
+    <<: *ros
+    profiles: [demo]
+    depends_on: [controller]
+    command: bash -c 'sleep 8 && ros2 run e1_control formation_mission --ros-args -p n:=$${E1_N}'
+
+  rviz:
+    <<: *ros
+    profiles: [gui]
+    environment: { DISPLAY: "${DISPLAY}", RMW_IMPLEMENTATION: rmw_zenoh_cpp, QT_X11_NO_MITSHM: "1" }
+    volumes: ["/tmp/.X11-unix:/tmp/.X11-unix:rw"]
+    command: bash -c 'python3 -c "import sys; sys.path.insert(0, \"/ws/install/e1_bringup/share/e1_bringup/launch\"); from common import rviz_config; print(rviz_config(range(1, $${E1_N}+1)))" > /tmp/p && rviz2 -d $$(cat /tmp/p)'
+
+  real:                       # real swarm: router + driver + controller; poses from mocap
+    <<: *ros
+    profiles: [real]
+    command: ros2 launch e1_bringup real.launch.py ids:="[1,2,3]" rviz:=false
+
+  tools:                      # shell with everything installed
+    <<: *ros
+    profiles: [tools]
+    command: bash
+
+  firmware:                   # PlatformIO build/flash
+    profiles: [tools]
+    build: { context: ., dockerfile: docker/Dockerfile.firmware }
+    image: e1_nano_firmware
+    volumes: ["./firmware:/firmware", "pio-cache:/root/.platformio"]
+    privileged: true
+
+  docs:                       # live documentation at http://localhost:8000
+    profiles: [tools]
+    image: squidfunk/mkdocs-material:latest
+    volumes: [".:/docs"]
+    ports: ["8000:8000"]
+
+volumes:
+  pio-cache:

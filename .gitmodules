@@ -1,0 +1,3 @@
+[submodule "firmware/external/CF-Drone"]
+	path = firmware/external/CF-Drone
+	url = https://github.com/songge8/CF-Drone

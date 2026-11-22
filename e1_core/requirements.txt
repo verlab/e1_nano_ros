@@ -1,0 +1,5 @@
+numpy>=1.24
+eclipse-zenoh==1.10.1   # must match the zenoh version of rmw_zenoh (zenoh-c 1.10.x in Jazzy/Kilted)
+mujoco>=3.2
+imageio>=2.31
+imageio-ffmpeg>=0.5

@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+<!-- Cherglow (琛光) E1 Nano v1.5Y - ESP32-S3 SuperMini mini quadcopter.
+     Geometry generated from the real PCB (oshwhub.com/songge8/project_fnvbukbz, E1 Nano v1.5Y).
+     Frame: base_link = FLU (x forward, y left, z up), origin at PCB centre, PCB mid-plane.
+     Wheelbase 50.0 mm (motor-to-motor diagonal), PCB 50.9 x 50.9 x 1.2 mm, total mass ~25 g.
+     Motor order/spin follows CF-Drone firmware (FL & RR = CW, FR & RL = CCW seen from above). -->
+<robot name="e1_nano">
+
+  <material name="e1_pcb"><color rgba="0.035 0.035 0.04 1"/></material>
+  <material name="e1_pad"><color rgba="0.78 0.78 0.76 1"/></material>
+  <material name="e1_silk"><color rgba="0.93 0.93 0.93 1"/></material>
+  <material name="e1_ic"><color rgba="0.08 0.08 0.09 1"/></material>
+  <material name="e1_cap"><color rgba="0.62 0.5 0.34 1"/></material>
+  <material name="e1_metal"><color rgba="0.8 0.8 0.82 1"/></material>
+  <material name="e1_led"><color rgba="0.95 0.95 0.88 1"/></material>
+  <material name="e1_red"><color rgba="0.8 0.08 0.06 1"/></material>
+  <material name="e1_white"><color rgba="0.95 0.95 0.93 1"/></material>
+  <material name="e1_gold"><color rgba="0.85 0.68 0.3 1"/></material>
+  <material name="e1_battery"><color rgba="0.15 0.25 0.55 1"/></material>
+  <material name="e1_velcro"><color rgba="0.05 0.05 0.05 1"/></material>
+  <material name="e1_wire_r"><color rgba="0.75 0.05 0.05 1"/></material>
+  <material name="e1_wire_b"><color rgba="0.05 0.05 0.08 1"/></material>
+  <material name="e1_motor"><color rgba="0.72 0.73 0.75 1"/></material>
+  <material name="e1_rubber"><color rgba="0.06 0.06 0.06 1"/></material>
+  <material name="e1_wire_w"><color rgba="0.92 0.92 0.92 1"/></material>
+  <material name="e1_wire_u"><color rgba="0.05 0.2 0.75 1"/></material>
+  <material name="e1_prop"><color rgba="0.7 0.82 0.92 0.55"/></material>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.000314588 6.12476e-07 -0.00125919" rpy="0 0 0"/>
+      <mass value="0.0225"/>
+      <inertia ixx="4.45277e-06" ixy="7.94275e-10" ixz="3.54596e-08" iyy="4.77647e-06" iyz="1.11623e-10" izz="8.06427e-06"/>
+    </inertial>
+    <visual name="pcb">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__pcb.stl" scale="1 1 1"/></geometry>
+      <material name="e1_pcb"/>
+    </visual>
+    <visual name="pad">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__pad.stl" scale="1 1 1"/></geometry>
+      <material name="e1_pad"/>
+    </visual>
+    <visual name="silk">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__silk.stl" scale="1 1 1"/></geometry>
+      <material name="e1_silk"/>
+    </visual>
+    <visual name="ic">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__ic.stl" scale="1 1 1"/></geometry>
+      <material name="e1_ic"/>
+    </visual>
+    <visual name="cap">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__cap.stl" scale="1 1 1"/></geometry>
+      <material name="e1_cap"/>
+    </visual>
+    <visual name="metal">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__metal.stl" scale="1 1 1"/></geometry>
+      <material name="e1_metal"/>
+    </visual>
+    <visual name="led">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__led.stl" scale="1 1 1"/></geometry>
+      <material name="e1_led"/>
+    </visual>
+    <visual name="red">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__red.stl" scale="1 1 1"/></geometry>
+      <material name="e1_red"/>
+    </visual>
+    <visual name="white">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__white.stl" scale="1 1 1"/></geometry>
+      <material name="e1_white"/>
+    </visual>
+    <visual name="gold">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__gold.stl" scale="1 1 1"/></geometry>
+      <material name="e1_gold"/>
+    </visual>
+    <visual name="battery">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__battery.stl" scale="1 1 1"/></geometry>
+      <material name="e1_battery"/>
+    </visual>
+    <visual name="velcro">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__velcro.stl" scale="1 1 1"/></geometry>
+      <material name="e1_velcro"/>
+    </visual>
+    <visual name="wire_r">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__wire_r.stl" scale="1 1 1"/></geometry>
+      <material name="e1_wire_r"/>
+    </visual>
+    <visual name="wire_b">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__wire_b.stl" scale="1 1 1"/></geometry>
+      <material name="e1_wire_b"/>
+    </visual>
+    <visual name="motor">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__motor.stl" scale="1 1 1"/></geometry>
+      <material name="e1_motor"/>
+    </visual>
+    <visual name="rubber">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__rubber.stl" scale="1 1 1"/></geometry>
+      <material name="e1_rubber"/>
+    </visual>
+    <visual name="wire_w">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__wire_w.stl" scale="1 1 1"/></geometry>
+      <material name="e1_wire_w"/>
+    </visual>
+    <visual name="wire_u">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/base_link__wire_u.stl" scale="1 1 1"/></geometry>
+      <material name="e1_wire_u"/>
+    </visual>
+    <collision name="pcb_core">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.026 0.026 0.0012"/></geometry>
+    </collision>
+    <collision name="arm_0">
+      <origin xyz="0 0 0" rpy="0 0 0.785398"/>
+      <geometry><box size="0.070 0.011 0.0012"/></geometry>
+    </collision>
+    <collision name="arm_1">
+      <origin xyz="0 0 0" rpy="0 0 -0.785398"/>
+      <geometry><box size="0.070 0.011 0.0012"/></geometry>
+    </collision>
+    <collision name="esp32_stack">
+      <origin xyz="0 0 0.002625" rpy="0 0 0"/>
+      <geometry><box size="0.0225 0.0235 0.00405"/></geometry>
+    </collision>
+    <collision name="battery">
+      <origin xyz="0 0 -0.00545" rpy="0 0 0"/>
+      <geometry><box size="0.024 0.0235 0.0071"/></geometry>
+    </collision>
+    <collision name="motor_front_left">
+      <origin xyz="0.0176784 0.0176784 0.00194154" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.0045" length="0.016"/></geometry>
+    </collision>
+    <collision name="leg_front_left">
+      <origin xyz="0.0176784 0.0176784 -0.00829513" rpy="0 0 0.785398"/>
+      <geometry><box size="0.0184 0.0012 0.0211903"/></geometry>
+    </collision>
+    <collision name="motor_front_right">
+      <origin xyz="0.0176784 -0.0176784 0.00194154" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.0045" length="0.016"/></geometry>
+    </collision>
+    <collision name="leg_front_right">
+      <origin xyz="0.0176784 -0.0176784 -0.00829513" rpy="0 0 -0.785398"/>
+      <geometry><box size="0.0184 0.0012 0.0211903"/></geometry>
+    </collision>
+    <collision name="motor_rear_left">
+      <origin xyz="-0.0176784 0.0176784 0.00194154" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.0045" length="0.016"/></geometry>
+    </collision>
+    <collision name="leg_rear_left">
+      <origin xyz="-0.0176784 0.0176784 -0.00829513" rpy="0 0 2.35619"/>
+      <geometry><box size="0.0184 0.0012 0.0211903"/></geometry>
+    </collision>
+    <collision name="motor_rear_right">
+      <origin xyz="-0.0176784 -0.0176784 0.00194154" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.0045" length="0.016"/></geometry>
+    </collision>
+    <collision name="leg_rear_right">
+      <origin xyz="-0.0176784 -0.0176784 -0.00829513" rpy="0 0 -2.35619"/>
+      <geometry><box size="0.0184 0.0012 0.0211903"/></geometry>
+    </collision>
+  </link>
+
+  <link name="imu_link"/>
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0.00712216 1.27e-05 0.00108" rpy="0 0 0"/>
+  </joint>
+
+  <link name="rotor_front_left">
+    <inertial>
+      <origin xyz="0 0 0.00205546" rpy="0 0 0"/>
+      <mass value="0.00065"/>
+      <inertia ixx="1.79769e-08" ixy="0" ixz="0" iyy="1.79769e-08" iyz="0" izz="3.49681e-08"/>
+    </inertial>
+    <visual name="prop">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/rotor_front_left__prop.stl" scale="1 1 1"/></geometry>
+      <material name="e1_prop"/>
+    </visual>
+    <visual name="metal">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/rotor_front_left__metal.stl" scale="1 1 1"/></geometry>
+      <material name="e1_metal"/>
+    </visual>
+    <collision name="disc">
+      <origin xyz="0 0 0.002" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.0155" length="0.003"/></geometry>
+    </collision>
+  </link>
+  <!-- rotor_front_left: CW seen from above -->
+  <joint name="rotor_front_left_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="rotor_front_left"/>
+    <origin xyz="0.0176784 0.0176784 0.0110415" rpy="0 0 0"/>
+    <axis xyz="0 0 -1"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
+  <link name="rotor_front_right">
+    <inertial>
+      <origin xyz="0 0 0.00205546" rpy="0 0 0"/>
+      <mass value="0.00065"/>
+      <inertia ixx="1.79769e-08" ixy="0" ixz="0" iyy="1.79769e-08" iyz="0" izz="3.49681e-08"/>
+    </inertial>
+    <visual name="prop">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/rotor_front_right__prop.stl" scale="1 1 1"/></geometry>
+      <material name="e1_prop"/>
+    </visual>
+    <visual name="metal">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/rotor_front_right__metal.stl" scale="1 1 1"/></geometry>
+      <material name="e1_metal"/>
+    </visual>
+    <collision name="disc">
+      <origin xyz="0 0 0.002" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.0155" length="0.003"/></geometry>
+    </collision>
+  </link>
+  <!-- rotor_front_right: CCW seen from above -->
+  <joint name="rotor_front_right_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="rotor_front_right"/>
+    <origin xyz="0.0176784 -0.0176784 0.0110415" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
+  <link name="rotor_rear_left">
+    <inertial>
+      <origin xyz="0 0 0.00205546" rpy="0 0 0"/>
+      <mass value="0.00065"/>
+      <inertia ixx="1.79769e-08" ixy="0" ixz="0" iyy="1.79769e-08" iyz="0" izz="3.49681e-08"/>
+    </inertial>
+    <visual name="prop">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/rotor_rear_left__prop.stl" scale="1 1 1"/></geometry>
+      <material name="e1_prop"/>
+    </visual>
+    <visual name="metal">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/rotor_rear_left__metal.stl" scale="1 1 1"/></geometry>
+      <material name="e1_metal"/>
+    </visual>
+    <collision name="disc">
+      <origin xyz="0 0 0.002" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.0155" length="0.003"/></geometry>
+    </collision>
+  </link>
+  <!-- rotor_rear_left: CCW seen from above -->
+  <joint name="rotor_rear_left_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="rotor_rear_left"/>
+    <origin xyz="-0.0176784 0.0176784 0.0110415" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
+  <link name="rotor_rear_right">
+    <inertial>
+      <origin xyz="0 0 0.00205546" rpy="0 0 0"/>
+      <mass value="0.00065"/>
+      <inertia ixx="1.79769e-08" ixy="0" ixz="0" iyy="1.79769e-08" iyz="0" izz="3.49681e-08"/>
+    </inertial>
+    <visual name="prop">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/rotor_rear_right__prop.stl" scale="1 1 1"/></geometry>
+      <material name="e1_prop"/>
+    </visual>
+    <visual name="metal">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://e1_description/meshes/visual/rotor_rear_right__metal.stl" scale="1 1 1"/></geometry>
+      <material name="e1_metal"/>
+    </visual>
+    <collision name="disc">
+      <origin xyz="0 0 0.002" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.0155" length="0.003"/></geometry>
+    </collision>
+  </link>
+  <!-- rotor_rear_right: CW seen from above -->
+  <joint name="rotor_rear_right_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="rotor_rear_right"/>
+    <origin xyz="-0.0176784 -0.0176784 0.0110415" rpy="0 0 0"/>
+    <axis xyz="0 0 -1"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+
+  <!-- ===== Gazebo (gz-sim) ===== Motor parameters are ESTIMATES for 0716 coreless + 31 mm 4-blade on 1S:
+       ~22 gf max thrust per motor at ~38k rpm (3980 rad/s): kF = 0.216/3980^2 = 1.36e-8 N/(rad/s)^2, kM/kF = 0.005 m. -->
+  <gazebo>
+    <plugin filename="gz-sim-multicopter-motor-model-system" name="gz::sim::systems::MulticopterMotorModel">
+      <robotNamespace>e1_nano</robotNamespace>
+      <jointName>rotor_rear_left_joint</jointName>
+      <linkName>rotor_rear_left</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.02</timeConstantUp>
+      <timeConstantDown>0.04</timeConstantDown>
+      <maxRotVelocity>3980</maxRotVelocity>
+      <motorConstant>1.36e-08</motorConstant>
+      <momentConstant>0.005</momentConstant>
+      <commandSubTopic>command/motor_speed</commandSubTopic>
+      <motorNumber>0</motorNumber>
+      <rotorDragCoefficient>2.0e-06</rotorDragCoefficient>
+      <rollingMomentCoefficient>1.0e-07</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/0</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+      <motorType>velocity</motorType>
+    </plugin>
+  </gazebo>
+  <gazebo>
+    <plugin filename="gz-sim-multicopter-motor-model-system" name="gz::sim::systems::MulticopterMotorModel">
+      <robotNamespace>e1_nano</robotNamespace>
+      <jointName>rotor_rear_right_joint</jointName>
+      <linkName>rotor_rear_right</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.02</timeConstantUp>
+      <timeConstantDown>0.04</timeConstantDown>
+      <maxRotVelocity>3980</maxRotVelocity>
+      <motorConstant>1.36e-08</motorConstant>
+      <momentConstant>0.005</momentConstant>
+      <commandSubTopic>command/motor_speed</commandSubTopic>
+      <motorNumber>1</motorNumber>
+      <rotorDragCoefficient>2.0e-06</rotorDragCoefficient>
+      <rollingMomentCoefficient>1.0e-07</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/1</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+      <motorType>velocity</motorType>
+    </plugin>
+  </gazebo>
+  <gazebo>
+    <plugin filename="gz-sim-multicopter-motor-model-system" name="gz::sim::systems::MulticopterMotorModel">
+      <robotNamespace>e1_nano</robotNamespace>
+      <jointName>rotor_front_right_joint</jointName>
+      <linkName>rotor_front_right</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.02</timeConstantUp>
+      <timeConstantDown>0.04</timeConstantDown>
+      <maxRotVelocity>3980</maxRotVelocity>
+      <motorConstant>1.36e-08</motorConstant>
+      <momentConstant>0.005</momentConstant>
+      <commandSubTopic>command/motor_speed</commandSubTopic>
+      <motorNumber>2</motorNumber>
+      <rotorDragCoefficient>2.0e-06</rotorDragCoefficient>
+      <rollingMomentCoefficient>1.0e-07</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/2</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+      <motorType>velocity</motorType>
+    </plugin>
+  </gazebo>
+  <gazebo>
+    <plugin filename="gz-sim-multicopter-motor-model-system" name="gz::sim::systems::MulticopterMotorModel">
+      <robotNamespace>e1_nano</robotNamespace>
+      <jointName>rotor_front_left_joint</jointName>
+      <linkName>rotor_front_left</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.02</timeConstantUp>
+      <timeConstantDown>0.04</timeConstantDown>
+      <maxRotVelocity>3980</maxRotVelocity>
+      <motorConstant>1.36e-08</motorConstant>
+      <momentConstant>0.005</momentConstant>
+      <commandSubTopic>command/motor_speed</commandSubTopic>
+      <motorNumber>3</motorNumber>
+      <rotorDragCoefficient>2.0e-06</rotorDragCoefficient>
+      <rollingMomentCoefficient>1.0e-07</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/3</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+      <motorType>velocity</motorType>
+    </plugin>
+  </gazebo>
+  <gazebo reference="imu_link">
+    <sensor name="mpu6500" type="imu">
+      <always_on>1</always_on>
+      <update_rate>1000</update_rate>
+      <topic>e1_nano/imu</topic>
+    </sensor>
+  </gazebo>
+</robot>
