@@ -11,3 +11,4 @@ e1_swarm_controller:
     ki: [0.4, 0.4, 1.2]
     tilt_max_deg: 25.0
     min_separation: 0.25     # m, simple repulsion between drones (0 = off)
+    align_yaw: true          # map commands into the onboard heading (no magnetometer); see YawAlign

@@ -1,26 +1,26 @@
 # FAQ
 
-**O drone não aparece em `e1-cli list`.**
-Rode `zn` no console: o modo WiFi precisa ser STA (`p WIFI_MODE 2`), o IP do roteador precisa estar certo
-e a porta 7447/TCP liberada no firewall do PC. Confira também que a versão do zenoh-pico é 1.10.x, igual
-à do roteador.
+**The drone does not appear in `e1-cli list`.**
+Run `zn` on the console: the WiFi mode must be STA (`p WIFI_MODE 2`), the router IP must be correct
+and port 7447/TCP must be open in the PC firewall. Also check that the zenoh-pico version is 1.10.x, the same
+as the router's.
 
-**`ros2 topic list` não mostra nada.**
-Falta `export RMW_IMPLEMENTATION=rmw_zenoh_cpp` ou o roteador (`ros2 run rmw_zenoh_cpp rmw_zenohd`).
+**`ros2 topic list` shows nothing.**
+Either `export RMW_IMPLEMENTATION=rmw_zenoh_cpp` or the router (`ros2 run rmw_zenoh_cpp rmw_zenohd`) is missing.
 
-**Posso usar Fast DDS/Cyclone no resto do sistema?**
-Pode. O `e1_bridge` fala Zenoh com os drones pela biblioteca Python, de forma independente do RMW. Para
-um enxame grande, porém, recomendamos `rmw_zenoh` em todo o sistema.
+**Can I use Fast DDS/Cyclone in the rest of the system?**
+Yes. `e1_bridge` talks Zenoh to the drones through the Python library, independently of the RMW. For
+a large swarm, however, we recommend `rmw_zenoh` across the whole system.
 
-**E o micro-ROS?** Veja [Escolha do middleware](middleware.md).
+**What about micro-ROS?** See [Middleware choice](middleware.md).
 
-**Quero voar sem mocap.** O voo manual funciona pelo Web RC do CF-Drone ou por `cmd/manual`. Voo
-autônomo por posição precisa de algum posicionamento externo (mocap, UWB, câmera + ArUco); o
-`e1_bridge` aceita qualquer `PoseStamped` em `mocap_topic`.
+**I want to fly without mocap.** Manual flight works through the CF-Drone Web RC or through `cmd/manual`.
+Autonomous position flight requires some form of external positioning (mocap, UWB, camera + ArUco);
+OptiTrack works out of the box (`mocap:=natnet`, see [Motion capture](mocap.md)); `e1_bridge` also accepts any `PoseStamped` on `mocap_topic`.
 
-**Por que o simulador "sabe" a atitude exata?** O estimador complementar do CF-Drone não foi portado;
-usamos a atitude verdadeira com ruído nos sensores. Para estudar o estimador, porte `estimate.ino` para
+**Why does the simulator "know" the exact attitude?** The CF-Drone complementary estimator has not been ported;
+the simulator uses the ground-truth attitude with sensor noise. To study the estimator, port `estimate.ino` to
 `e1_core.firmware`.
 
-**Funciona com o E1 MINI (ESP32 clássico)?** O firmware sim (`pio run -e e1_mini`), mas o modelo 3D e as
-constantes físicas são do Nano.
+**Does it work with the E1 MINI (classic ESP32)?** The firmware does (`pio run -e e1_mini`), but the 3D model and
+the physical constants are those of the Nano.

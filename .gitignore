@@ -10,3 +10,4 @@ site/
 !docs/assets/*.mp4
 firmware/.pio/
 firmware/.e1_src/
+docs/viewer/assets/*.glb

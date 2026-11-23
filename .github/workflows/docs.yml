@@ -1,17 +1,32 @@
 name: Docs
 on:
-  push: { branches: [main], paths: ['docs/**', 'mkdocs.yml', 'README.md'] }
+  push: { branches: [main], paths: ['docs/**', 'mkdocs.yml', 'README.md', 'wiki/**', 'e1_description/meshes/**', '.github/workflows/docs.yml'] }
   workflow_dispatch:
 permissions: { contents: write, pages: write, id-token: write }
+concurrency: { group: pages, cancel-in-progress: false }
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - run: pip install mkdocs-material
-      - run: mkdocs gh-deploy --force --clean
+      - name: site + 3D viewer
+        run: |
+          mkdir -p docs/viewer/assets
+          cp e1_description/meshes/e1_nano_full.glb docs/viewer/assets/
+          mkdocs build
+          test -f site/viewer/index.html && test -f site/viewer/assets/e1_nano_full.glb && test -f site/viewer/data/index.json
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment: { name: github-pages, url: '${{ steps.deployment.outputs.page_url }}' }
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
   wiki:
     runs-on: ubuntu-24.04
     steps:
@@ -20,6 +35,6 @@ jobs:
         env: { TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
         run: |
           git clone "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki_repo || exit 0
-          cp wiki/*.md wiki_repo/ && cd wiki_repo
+          rm -f wiki_repo/*.md && cp wiki/*.md wiki_repo/ && cd wiki_repo
           git config user.name github-actions && git config user.email actions@github.com
           git add -A && (git commit -m "Sync wiki from main" && git push) || echo "wiki up to date"

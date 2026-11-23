@@ -1,0 +1,17 @@
+e1_mocap:
+  ros__parameters:
+    server_ip: "192.168.1.10"     # Motive PC
+    local_ip: "192.168.1.20"      # this PC, on the mocap network (wired Ethernet recommended)
+    multicast: true               # Motive "Transmission Type": Multicast (default) or Unicast
+    multicast_group: "239.255.42.99"
+    command_port: 1510
+    data_port: 1511
+    natnet_version: ""            # "" = ask Motive; e.g. "4.1" to force
+    up_axis: "z"                  # Motive streaming "Up Axis": z (recommended) or y (Motive default)
+    name_pattern: "e1_(\\d+)"     # rigid body name -> drone id (group 1)
+    by_id: false                  # true: use the Motive streaming id as the drone id
+    namespace_prefix: "e1_"
+    topic: "mocap/pose"           # published as /<prefix><id>/<topic>
+    world_frame: "world"
+    publish_tf: false             # e1_bridge already publishes world -> <ns>/base_link
+    rate: 120.0                   # max rate per drone (Hz)

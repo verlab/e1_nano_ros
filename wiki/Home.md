@@ -1,17 +1,17 @@
 # E1 Nano ROS — Wiki
 
-Bem-vindo! Esta wiki é um guia rápido. A documentação completa está em **https://verlab.github.io/e1_nano_ros/**.
+This wiki is a quick guide. The complete documentation is at **https://verlab.github.io/e1_nano_ros/**.
 
-| Página | Conteúdo |
+| Page | Content |
 |---|---|
-| [[Primeiros passos|Primeiros-passos]] | instalar (Docker / nativo) e rodar a simulação |
-| [[Tutorial passo a passo|Tutorial]] | da simulação ao enxame real |
-| [[Firmware|Firmware]] | gravar e configurar o E1 Nano com o link Zenoh |
-| [[Voo real|Voo-real]] | mocap, checklist, emergência |
-| [[Arquitetura e middleware|Arquitetura]] | por que Zenoh e como as peças se encaixam |
-| [[Referência rápida|Referencia]] | tópicos, serviços, chaves Zenoh, comandos de console |
-| [[Solução de problemas|Problemas]] | erros comuns |
+| [[Getting started|Getting-started]] | install (Docker / native) and run the simulation |
+| [[Step-by-step tutorial|Tutorial]] | from simulation to a real swarm |
+| [[Firmware|Firmware]] | flash and configure the E1 Nano with the Zenoh link |
+| [[Real flight|Real-flight]] | mocap, checklist, emergency stop |
+| [[Architecture and middleware|Architecture]] | why Zenoh and how the components fit together |
+| [[Quick reference|Reference]] | topics, services, Zenoh keys, console commands |
+| [[Troubleshooting|Troubleshooting]] | common errors |
 
-O E1 Nano é um quadricóptero de 50 mm e 25 g com ESP32-S3 (projeto aberto da Cherglow). Este repositório
-traz o driver ROS 2, o firmware com Zenoh, a simulação MuJoCo/Genesis e as ferramentas de enxame,
-mantidos pelo VeRLab (DCC/UFMG).
+The E1 Nano is a 50 mm, 25 g quadrotor based on the ESP32-S3 (open hardware and firmware by Cherglow, songge8).
+This repository provides the ROS 2 driver, the Zenoh firmware, the MuJoCo/Genesis simulation and the swarm tools,
+maintained by VeRLab (DCC/UFMG).

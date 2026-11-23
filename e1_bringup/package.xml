@@ -11,6 +11,7 @@
   <exec_depend>e1_description</exec_depend>
   <exec_depend>e1_bridge</exec_depend>
   <exec_depend>e1_control</exec_depend>
+  <exec_depend>e1_mocap</exec_depend>
   <exec_depend>rmw_zenoh_cpp</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>rviz2</exec_depend>

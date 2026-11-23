@@ -1,56 +1,56 @@
-# 3. Firmware e primeiro voo (manual)
+# 3. Firmware and first flight (manual)
 
-## 3.1 Montagem
+## 3.1 Assembly
 
-Siga o guia original do projeto ([oshwhub](https://oshwhub.com/songge8/project_fnvbukbz)). PCB de 1,2 mm,
-ESP32-S3 SuperMini por cima da placa, bateria LiPo 1S por baixo presa com velcro, motores 0716 nos anéis de
-borracha. **Sentido dos motores** (vistos de cima): frente-esquerda e trás-direita no sentido horário;
-frente-direita e trás-esquerda no anti-horário.
+Follow the original project guide by Cherglow ([OSHWHub](https://oshwhub.com/songge8/project_fnvbukbz)). 1.2 mm PCB,
+ESP32-S3 SuperMini on top of the board, 1S LiPo battery underneath attached with velcro, 0716 motors in the
+rubber rings. **Motor spin directions** (seen from above): front-left and rear-right clockwise;
+front-right and rear-left counterclockwise.
 
-## 3.2 Gravar
+## 3.2 Flashing
 
 ```bash
 git submodule update --init --recursive
 cd firmware
-pio run -e e1_nano -t upload        # segure BOOT ao conectar o USB na primeira gravação
+pio run -e e1_nano -t upload        # hold BOOT while plugging in USB for the first upload
 pio device monitor                  # 115200
 ```
 
-Sem PlatformIO: `docker compose run --rm --device /dev/ttyACM0 firmware pio run -t upload`.
+Without PlatformIO: `docker compose run --rm --device /dev/ttyACM0 firmware pio run -t upload`.
 
-## 3.3 Calibração (uma vez)
+## 3.3 Calibration (once)
 
-No monitor serial (ou no Web RC do CF-Drone em `http://192.168.4.1` → Depurar):
+In the serial monitor (or in the CF-Drone Web RC at `http://192.168.4.1` → Debug):
 
 ```text
-ca            # calibração de 6 posições do IMU, siga as instruções
-ps            # roll/pitch próximos de 0 => ok
-mfl / mfr / mrl / mrr   # testa cada motor SEM hélices
+ca            # 6-position IMU calibration, follow the instructions
+ps            # roll/pitch close to 0 => ok
+mfl / mfr / mrl / mrr   # tests each motor WITHOUT propellers
 ```
 
-## 3.4 Primeiro voo manual
+## 3.4 First manual flight
 
-Com o firmware de fábrica (modo AP `Drone_WiFi` / `12345678`), use o Web RC em `http://192.168.4.1`
-para um voo curto e confirme que tudo funciona antes de passar ao Zenoh.
+With the factory firmware (AP mode `Drone_WiFi` / `12345678`), use the Web RC at `http://192.168.4.1`
+for a short flight and confirm that everything works before moving on to Zenoh.
 
-## 3.5 Entrar na rede do laboratório (Zenoh)
+## 3.5 Joining the lab network (Zenoh)
 
 ```text
-sta VerlabWiFi senha123
+sta VerlabWiFi password123
 p WIFI_MODE 2
 zn id 1
-zn connect tcp/192.168.1.100:7447     # IP do PC com o roteador
+zn connect tcp/192.168.1.100:7447     # IP of the PC running the router
 reboot
-zn                                    # "connected", rx/tx subindo
+zn                                    # "connected", rx/tx increasing
 ```
 
-No PC:
+On the PC:
 
 ```bash
-ros2 run rmw_zenoh_cpp rmw_zenohd     # ou: docker compose up router
+ros2 run rmw_zenoh_cpp rmw_zenohd     # or: docker compose up router
 e1-cli list                           # -> drones: 1
 e1-cli status
 ```
 
-Daqui em diante o drone aparece para o ROS exatamente como no simulador.
-Próximo: [voo real com captura de movimento](04-voo-real.md).
+From this point on, the drone appears to ROS exactly as in the simulator.
+Next: [real flight with motion capture](04-real-flight.md).

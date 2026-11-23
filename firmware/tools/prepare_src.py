@@ -1,17 +1,25 @@
-"""PlatformIO pre-build script: assemble CF-Drone + the E1 Zenoh link into .e1_src/.
+"""PlatformIO pre-build script: assemble the firmware sources into .e1_src/.
 
-CF-Drone is used unmodified as a git submodule (external/CF-Drone). This script copies it,
-adds src_e1/ and inserts four one-line hooks. Every anchor is checked, so a CF-Drone update
+CF-Drone is used unmodified as a git submodule (external/CF-Drone). Two variants:
+
+* Zenoh (``custom_e1_zenoh = yes``, default): copies CF-Drone, adds src_e1/ and inserts five
+  one-line hooks.
+* Stock (``custom_e1_zenoh = no``): CF-Drone exactly as upstream (MAVLink / web RC / console).
+ Every anchor is checked, so a CF-Drone update
 that moves an anchor fails loudly instead of producing a silently broken firmware.
 """
 import os
 import shutil
 
+import sys
+
 try:
     Import('env')  # noqa: F821  (PlatformIO / SCons)
     PROJ = env.subst('$PROJECT_DIR')  # noqa: F821
-except NameError:   # allow running stand-alone: python3 tools/prepare_src.py
+    ZENOH = env.GetProjectOption('custom_e1_zenoh', 'yes').strip().lower() in ('yes', 'true', '1')  # noqa: F821
+except NameError:   # allow running stand-alone: python3 tools/prepare_src.py [--stock]
     PROJ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ZENOH = '--stock' not in sys.argv
 
 CF = os.path.join(PROJ, 'external', 'CF-Drone')
 OUT = os.path.join(PROJ, '.e1_src')
@@ -42,6 +50,9 @@ def main():
             shutil.copytree(src, os.path.join(OUT, 'drivers'))
         elif name.endswith(('.ino', '.h', '.cpp')):
             shutil.copy2(src, OUT)
+    if not ZENOH:
+        print(f'[e1] stock CF-Drone sources assembled in {OUT}')
+        return
     for name in os.listdir(E1):
         shutil.copy2(os.path.join(E1, name), OUT)
     for fname, patches in PATCHES.items():
@@ -58,7 +69,7 @@ def main():
         s = '\n'.join(lines)
         with open(path, 'w', encoding='utf-8') as f:
             f.write(s)
-    print(f'[e1] firmware sources assembled in {OUT}')
+    print(f'[e1] CF-Drone + E1 Zenoh link sources assembled in {OUT}')
 
 
 main()

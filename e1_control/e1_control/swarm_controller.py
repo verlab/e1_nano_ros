@@ -15,7 +15,7 @@ import math
 
 import numpy as np
 import rclpy
-from e1_core.control import Gains, PositionController, VehicleModel, min_jerk, separation_acc
+from e1_core.control import Gains, PositionController, VehicleModel, YawAlign, min_jerk, separation_acc
 from e1_core.math3d import yaw_of
 from e1_msgs.msg import AttitudeTarget, FlightState, PositionTarget, SwarmStatus
 from e1_msgs.srv import GoTo, Land, Takeoff
@@ -36,6 +36,8 @@ class Vehicle:
         self.ctrl = PositionController(node.model, node.gains)
         self.pos = self.vel = None
         self.quat = (1.0, 0.0, 0.0, 0.0)
+        self.fw_yaw = None            # onboard heading estimate (from FlightState)
+        self.yaw_align = YawAlign() if node.align_yaw else None
         self.battery = 4.2
         self.mode = IDLE
         self.traj = None              # callable(t) -> (p, v, a)
@@ -64,6 +66,8 @@ class Vehicle:
 
     def on_state(self, m):
         self.battery = m.battery_voltage or 4.2
+        a = m.attitude
+        self.fw_yaw = yaw_of((a.w, a.x, a.y, a.z))
 
     def on_setpoint(self, m: PositionTarget):
         p, v, a = m.position, m.velocity, m.acceleration
@@ -135,7 +139,11 @@ class Vehicle:
             self.mode, self.traj = IDLE, None
             return None
         extra = separation_acc(self.id, others, self.n.min_sep) if self.n.min_sep > 0 and self.mode == FLYING else None
-        q, duty = self.ctrl.update(t, self.pos, self.vel, yaw_of(self.quat), p, v, a, self.yaw_sp, self.battery, dt, extra)
+        yaw = yaw_of(self.quat)
+        q, duty = self.ctrl.update(t, self.pos, self.vel, yaw, p, v, a, self.yaw_sp, self.battery, dt, extra)
+        if self.yaw_align is not None and self.fw_yaw is not None:
+            self.yaw_align.update(t, self.fw_yaw, yaw)
+            q = self.yaw_align.apply(q)
         self.send(q, duty)
         return p
 
@@ -155,8 +163,10 @@ class SwarmController(Node):
         dp('ids', [0]); dp('namespace_prefix', 'e1_'); dp('rate', 50.0); dp('world_frame', 'world')
         dp('mass', 0.0251); dp('max_thrust', 0.216); dp('kp', [4.0, 4.0, 5.0]); dp('kd', [3.0, 3.0, 3.5])
         dp('ki', [0.4, 0.4, 1.2]); dp('tilt_max_deg', 25.0); dp('min_separation', 0.25)
+        dp('align_yaw', True)     # rotate commands by (firmware yaw - mocap yaw); see e1_core.control.YawAlign
         g = lambda k: self.get_parameter(k).value
         self.prefix, self.world, self.rate, self.min_sep = g('namespace_prefix'), g('world_frame'), g('rate'), g('min_separation')
+        self.align_yaw = bool(g('align_yaw'))
         self.model = VehicleModel(g('mass'), g('max_thrust'))
         self.gains = Gains(np.array(g('kp')), np.array(g('kd')), np.array(g('ki')), tilt_max=math.radians(g('tilt_max_deg')))
         self.v: dict[int, Vehicle] = {}

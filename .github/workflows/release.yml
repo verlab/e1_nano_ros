@@ -1,0 +1,31 @@
+name: Release
+on:
+  push: { tags: ['v*'] }
+permissions: { contents: write }
+jobs:
+  firmware:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix: { env: [e1_nano, e1_nano_stock, e1_mini, e1_mini_stock] }
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: recursive }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install platformio esptool && sudo apt-get install -y cmake
+      - run: cd firmware && pio run -e ${{ matrix.env }}
+      - run: firmware/tools/merge_bin.sh ${{ matrix.env }} dist
+      - uses: actions/upload-artifact@v4
+        with: { name: 'fw-${{ matrix.env }}', path: dist/* }
+  release:
+    needs: firmware
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - name: create release with firmware binaries
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          notes=$(awk -v t="${GITHUB_REF_NAME#v}" '$0 ~ "^## \\[?"t {f=1; next} /^## / && f {exit} f' CHANGELOG.md)
+          gh release create "$GITHUB_REF_NAME" dist/* --title "$GITHUB_REF_NAME" --notes "${notes:-See CHANGELOG.md}"

@@ -1,24 +1,31 @@
 # E1 Nano ROS
 
-**Driver ROS 2, firmware com Zenoh, simulação e ferramentas de enxame para o mini-drone ESP32
-[Cherglow E1 Nano](https://oshwhub.com/songge8/project_fnvbukbz)**: 50 mm entre eixos, 25 g, ESP32-S3.
+**ROS 2 driver, Zenoh firmware, simulation and swarm tools for the ESP32 mini-drone
+[Cherglow E1 Nano](https://oshwhub.com/songge8/project_fnvbukbz)**: 50 mm wheelbase, 25 g, ESP32-S3.
 
 <video src="assets/swarm_demo.mp4" controls muted loop playsinline width="100%"></video>
 
-## O que tem aqui
+!!! tip "Interactive 3D"
+    Replays of the MuJoCo and Genesis simulations, and the drone model with an exploded view, in the
+    [**3D viewer**](viewer/index.html).
 
-| Peça | O que faz |
+<iframe src="viewer/" title="E1 Nano 3D viewer" style="width:100%;height:560px;border:1px solid #8884;border-radius:10px"></iframe>
+
+## Contents
+
+| Component | Function |
 |---|---|
-| **`firmware/`** | CF-Drone original (submódulo) mais o **E1 Zenoh link**: o drone publica telemetria e recebe comandos direto na malha Zenoh do ROS 2, sem agente nem ponte. |
-| **`e1_core`** | Núcleo em Python, sem ROS: protocolo, porte do controlador do CF-Drone, controle de posição, cliente de enxame e simuladores **MuJoCo** e **Genesis** (*software in the loop*). |
-| **`e1_bridge`** | Driver ROS 2: um processo atende o enxame todo, com tópicos, serviços e TF por drone e descoberta automática. |
-| **`e1_control`** | Controle de posição de N drones, serviços `takeoff`/`land`/`goto` e missões de exemplo (quadrado, formação). |
-| **`e1_description`** | Modelo 3D feito a partir do PCB real: URDF (ROS/Gazebo), MJCF (MuJoCo), URDF para Genesis e malhas. |
-| **`e1_msgs`** | Mensagens e serviços. |
-| **`e1_bringup`** | Launch de simulação e de voo real, configuração do roteador Zenoh e RViz. |
-| **`docker/`**, **`compose.yaml`** | Ambiente completo com um comando, incluindo build do firmware e documentação. |
+| **`firmware/`** | Original CF-Drone (submodule) plus the **E1 Zenoh link**: the drone publishes telemetry and receives commands directly on the ROS 2 Zenoh network, with no agent or bridge. |
+| **`e1_core`** | ROS-independent Python core: protocol, port of the CF-Drone controller, position control, swarm client and **MuJoCo** and **Genesis** simulators (*software in the loop*). |
+| **`e1_bridge`** | ROS 2 driver: a single process serves the whole swarm, with per-drone topics, services and TF and automatic discovery. |
+| **`e1_mocap`** | OptiTrack motion capture: pure-Python NatNet client (no SDK), one `PoseStamped` per drone, Y/Z-up handling and tracking diagnostics. A fake Motive in the simulator lets you rehearse the real setup. |
+| **`e1_control`** | Position control of N drones, `takeoff`/`land`/`goto` services and example missions (square, formation). |
+| **`e1_description`** | 3D model built from the actual PCB: URDF (ROS/Gazebo), MJCF (MuJoCo), URDF for Genesis and meshes. |
+| **`e1_msgs`** | Messages and services. |
+| **`e1_bringup`** | Launch files for simulation and real flight, Zenoh router configuration and RViz. |
+| **`docker/`**, **`compose.yaml`** | Complete environment with a single command, including firmware and documentation builds. |
 
-## Arquitetura em uma figura
+## Architecture at a glance
 
 ```mermaid
 flowchart LR
@@ -26,32 +33,36 @@ flowchart LR
     FW1["CF-Drone + zenoh-pico<br/>e1/1/**"]
     FW2["CF-Drone + zenoh-pico<br/>e1/2/**"]
   end
-  subgraph SIM["ou simulação"]
-    S["e1-sim (MuJoCo/Genesis)<br/>mesmo firmware em Python"]
+  subgraph SIM["or simulation"]
+    S["e1-sim (MuJoCo/Genesis)<br/>same firmware in Python"]
   end
-  R(("Roteador Zenoh<br/>rmw_zenohd :7447"))
+  R(("Zenoh router<br/>rmw_zenohd :7447"))
   FW1 -- WiFi TCP --> R
   FW2 -- WiFi TCP --> R
   S --> R
   R --- B["e1_bridge<br/>(ROS 2)"]
   R --- C["e1_swarm_controller"]
-  R --- PY["scripts Python<br/>(e1_core.client)"]
-  MC["Mocap (VRPN/OptiTrack)"] --> B
-  B --- RV["RViz / rosbag / seus nós"]
+  R --- PY["Python scripts<br/>(e1_core.client)"]
+  MC["OptiTrack (NatNet)<br/>e1_mocap"] --> B
+  B --- RV["RViz / rosbag / your nodes"]
 ```
 
-O ROS 2 usa `rmw_zenoh_cpp`, que é Tier-1 desde o Kilted. Assim, **drones, simulador, nós ROS e scripts
-compartilham o mesmo roteador Zenoh**. Simulação e hardware usam exatamente o mesmo protocolo e a mesma
-API: um código testado no simulador voa no drone real sem alterações.
-A justificativa da escolha está em [Escolha do middleware](middleware.md).
+ROS 2 uses `rmw_zenoh_cpp`, which has been Tier-1 since Kilted. Therefore **drones, simulator, ROS nodes and scripts
+share the same Zenoh router**. Simulation and hardware use exactly the same protocol and the same
+API: code tested in the simulator flies on the real drone without changes.
+The rationale for this choice is given in [Middleware choice](middleware.md).
 
-## Comece por aqui
+## Where to start
 
-1. [Instalação](instalacao.md): Docker ou nativo.
-2. [Simulação em 5 minutos](tutorial/01-simulacao.md): um drone e depois um enxame, sem ROS.
+1. [Installation](installation.md): Docker or native.
+2. [Simulation in 5 minutes](tutorial/01-simulation.md): one drone and then a swarm, without ROS.
 3. [ROS 2 + RViz](tutorial/02-ros2.md).
-4. [Firmware](tutorial/03-firmware.md) e [voo real](tutorial/04-voo-real.md).
+4. [Firmware](tutorial/03-firmware.md) and [real flight](tutorial/04-real-flight.md).
 
-!!! warning "Antes de voar de verdade"
-    Leia [Segurança de voo](seguranca.md). As hélices de 31 mm machucam, e o E1 Nano não tem sensor de
-    posição: voo autônomo exige captura de movimento (ou outro sistema de posicionamento externo).
+!!! warning "Before flying for real"
+    Read [Flight safety](safety.md). The 31 mm propellers can cause injuries, and the E1 Nano has no position
+    sensor: autonomous flight requires motion capture (or another external positioning system).
+
+## Credits
+
+Developed and maintained by VeRLab — DCC/UFMG. E1 Nano hardware and CF-Drone firmware by Cherglow (songge8).

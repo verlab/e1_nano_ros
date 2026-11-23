@@ -22,5 +22,6 @@ setup(
     entry_points={'console_scripts': [
         'e1-sim = e1_core.sim.cli:main',
         'e1-cli = e1_core.cli:main',
+        'e1-mocap = e1_core.mocap.relay:main',
     ]},
 )

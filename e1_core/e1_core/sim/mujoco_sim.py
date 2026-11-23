@@ -21,6 +21,7 @@ import numpy as np
 
 from .. import protocol as P
 from ..firmware import Firmware
+from ..math3d import qmul, yaw_quat
 from .description import find_mjcf
 
 MAX_THRUST = 0.216     # N per motor at duty 1, 4.2 V
@@ -107,6 +108,14 @@ class SimDrone:
         self.battery_v = 4.15
         self.cmds = collections.deque(maxlen=64)
         self.seq = 0
+        self.yaw_offset = 0.0           # rad, onboard heading error at t=0 (no magnetometer)
+        self.yaw_drift = 0.0            # rad/s, onboard heading drift (gyro z bias)
+
+    def onboard_attitude(self, q, t):
+        """Attitude as the firmware estimates it: true attitude seen from a yaw-shifted frame."""
+        if self.yaw_offset == 0.0 and self.yaw_drift == 0.0:
+            return q
+        return qmul(yaw_quat(self.yaw_offset + self.yaw_drift * t), q)
 
     def battery(self, duty, dt):
         current = 1.6 * float(np.sum(duty ** 2))            # A (≈1.8 A at hover)
@@ -120,7 +129,7 @@ class SwarmSim:
     """N E1 Nano drones in one MuJoCo world."""
 
     def __init__(self, n=1, ids=None, kind='grid', spacing=0.5, starts=None, fw_rate=500.0, seed=0,
-                 gyro_noise=0.01, acc_noise=0.05):
+                 gyro_noise=0.01, acc_noise=0.05, yaw_offset=0.0, yaw_drift=0.0):
         ids = list(ids or range(1, n + 1))
         starts = starts or layout(len(ids), kind, spacing)
         self.z0 = 0.0198
@@ -133,6 +142,8 @@ class SwarmSim:
         self.rng = np.random.default_rng(seed)
         self.gyro_noise, self.acc_noise = gyro_noise, acc_noise
         self.k = 0
+        for d in self.drones.values():
+            d.yaw_offset, d.yaw_drift = float(yaw_offset), float(yaw_drift)
         mujoco.mj_forward(self.model, self.data)
 
     @property
@@ -163,7 +174,7 @@ class SwarmSim:
                 gyro = dat.sensordata[d.s_gyro:d.s_gyro + 3] + self.rng.normal(0, self.gyro_noise, 3)
                 acc = dat.sensordata[d.s_acc:d.s_acc + 3] + self.rng.normal(0, self.acc_noise, 3)
                 bv = d.battery(d.fw.motors, self.dt * self.fw_every)
-                d.fw.step(self.t, q, gyro, acc, bv)
+                d.fw.step(self.t, d.onboard_attitude(q, self.t), gyro, acc, bv)
             duty = np.asarray(d.fw.motors, float)
             d.spin += (duty * (d.battery_v / 4.2) - d.spin) * (self.dt / MOTOR_TAU)
             thrust = MAX_THRUST * np.clip(d.spin, 0, 1.2) ** 2
@@ -176,8 +187,9 @@ class SwarmSim:
 class ZenohSimServer:
     """Runs a SwarmSim in real time and bridges it to Zenoh."""
 
-    def __init__(self, sim: SwarmSim, session, state_hz=50.0, pose_hz=100.0, speed=1.0):
+    def __init__(self, sim: SwarmSim, session, state_hz=50.0, pose_hz=100.0, speed=1.0, publish_pose=True):
         self.sim, self.s = sim, session
+        self.publish_pose = publish_pose  # False: poses come from a mocap relay (e.g. ``e1-sim --natnet``)
         self.state_every = max(1, int(round(1 / (state_hz * sim.dt))))
         self.pose_every = max(1, int(round(1 / (pose_hz * sim.dt))))
         self.speed = speed
@@ -220,7 +232,7 @@ class ZenohSimServer:
 
     def publish(self):
         sim = self.sim
-        if sim.k % self.pose_every == 0:
+        if self.publish_pose and sim.k % self.pose_every == 0:
             for did in sim.drones:
                 pose = sim.pose(did)
                 self.pub_pose[did].put(pose.encode())

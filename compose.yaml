@@ -48,10 +48,12 @@ services:
     volumes: ["/tmp/.X11-unix:/tmp/.X11-unix:rw"]
     command: bash -c 'python3 -c "import sys; sys.path.insert(0, \"/ws/install/e1_bringup/share/e1_bringup/launch\"); from common import rviz_config; print(rviz_config(range(1, $${E1_N}+1)))" > /tmp/p && rviz2 -d $$(cat /tmp/p)'
 
-  real:                       # real swarm: router + driver + controller; poses from mocap
+  real:                       # real swarm: router + OptiTrack (NatNet) + driver + controller
     <<: *ros
     profiles: [real]
-    command: ros2 launch e1_bringup real.launch.py ids:="[1,2,3]" rviz:=false
+    command: >-
+      ros2 launch e1_bringup real.launch.py ids:="${E1_IDS:-[1,2,3]}" rviz:=false
+      mocap:=natnet server_ip:=${MOTIVE_IP:-192.168.1.10} local_ip:=${MOCAP_LOCAL_IP:-0.0.0.0}
 
   tools:                      # shell with everything installed
     <<: *ros

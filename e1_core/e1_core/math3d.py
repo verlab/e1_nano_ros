@@ -99,3 +99,8 @@ def mat_to_quat(R):
         q = [(R[1, 0] - R[0, 1]) / s, (R[0, 2] + R[2, 0]) / s, (R[1, 2] + R[2, 1]) / s, 0.25 * s]
     q = np.array(q)
     return q / np.linalg.norm(q) * (1 if q[0] >= 0 else -1)
+
+
+def yaw_quat(yaw):
+    """Pure rotation about world z."""
+    return np.array([math.cos(yaw / 2), 0.0, 0.0, math.sin(yaw / 2)])

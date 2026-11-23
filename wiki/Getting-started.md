@@ -1,4 +1,4 @@
-# Primeiros passos
+# Getting started
 
 ```bash
 git clone --recursive https://github.com/verlab/e1_nano_ros.git && cd e1_nano_ros
@@ -6,7 +6,7 @@ docker compose build
 E1_N=4 docker compose --profile demo up router sim bridge controller mission
 ```
 
-Sem Docker (ROS 2 Jazzy):
+Without Docker (ROS 2 Jazzy):
 
 ```bash
 sudo apt install ros-jazzy-rmw-zenoh-cpp ros-jazzy-robot-state-publisher ros-jazzy-rviz2
@@ -16,7 +16,7 @@ export RMW_IMPLEMENTATION=rmw_zenoh_cpp
 ros2 launch e1_bringup sim.launch.py num:=4 mission:=formation
 ```
 
-Sem ROS:
+Without ROS:
 
 ```bash
 pip install -e "e1_core[sim,zenoh]"; export E1_DESCRIPTION_DIR=$PWD/e1_description

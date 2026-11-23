@@ -18,7 +18,7 @@ import numpy as np
 import zenoh
 
 from . import protocol as P
-from .control import PositionController, VehicleModel, Waypoints, min_jerk
+from .control import PositionController, VehicleModel, Waypoints, YawAlign, min_jerk
 from .math3d import yaw_of
 
 
@@ -50,6 +50,7 @@ class Drone:
         self.rate_hz = rate_hz
         self.setpoint = None          # callable t -> (pos, vel, acc) or None
         self.sp_yaw = 0.0
+        self.yaw_align = YawAlign()   # mocap heading -> firmware heading (no magnetometer onboard)
         self._t0 = time.monotonic()
         self._seq = 0
         self._lock = threading.Lock()
@@ -128,8 +129,11 @@ class Drone:
             return
         pos, vel, acc = self.setpoint(t)
         bv = self.state.battery_v if self.state else 4.2
-        q, duty = self.ctrl.update(t, self.pose.pos, self.pose.vel, yaw_of(self.pose.quat), pos, vel, acc,
-                                   self.sp_yaw, bv, dt)
+        yaw = yaw_of(self.pose.quat)
+        q, duty = self.ctrl.update(t, self.pose.pos, self.pose.vel, yaw, pos, vel, acc, self.sp_yaw, bv, dt)
+        if self.yaw_align is not None and self.state is not None:
+            self.yaw_align.update(t, yaw_of(self.state.quat), yaw)
+            q = self.yaw_align.apply(q)
         self.attitude(q, duty)
 
     def close(self):

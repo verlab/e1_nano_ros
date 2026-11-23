@@ -1,11 +1,11 @@
 ---
 name: Bug
-about: Algo não funciona
+about: Something does not work
 ---
-**O que aconteceu**
+**What happened**
 
-**Como reproduzir** (comandos, `num`, sim ou real)
+**How to reproduce** (commands, `num`, simulation or real hardware)
 
-**Versões**: ROS_DISTRO, commit, firmware (`zn`), zenoh
+**Versions**: ROS_DISTRO, commit, firmware (`zn`), zenoh
 
 **Logs** (`ros2 launch ...`, `e1-cli console <id> "zn"`)

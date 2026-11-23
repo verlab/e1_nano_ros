@@ -1,22 +1,22 @@
-site_name: E1 Nano ROS — enxame de mini-drones ESP32
-site_description: Driver ROS 2, firmware Zenoh, simulação MuJoCo/Genesis e tutoriais para o Cherglow E1 Nano
+site_name: E1 Nano ROS — ESP32 mini-drone swarm
+site_description: ROS 2 driver, Zenoh firmware, MuJoCo/Genesis simulation and tutorials for the Cherglow E1 Nano
 site_url: https://verlab.github.io/e1_nano_ros/
 repo_url: https://github.com/verlab/e1_nano_ros
 repo_name: verlab/e1_nano_ros
 edit_uri: edit/main/docs/
-copyright: VeRLab — DCC/UFMG · código Apache-2.0 · modelo/firmware sob licenças de origem
+copyright: VeRLab — DCC/UFMG · code Apache-2.0 · model/firmware under their original licenses
 theme:
   name: material
-  language: pt-BR
+  language: en
   palette:
     - scheme: default
       primary: deep orange
       accent: amber
-      toggle: { icon: material/weather-night, name: Modo escuro }
+      toggle: { icon: material/weather-night, name: Dark mode }
     - scheme: slate
       primary: deep orange
       accent: amber
-      toggle: { icon: material/weather-sunny, name: Modo claro }
+      toggle: { icon: material/weather-sunny, name: Light mode }
   features: [navigation.tabs, navigation.sections, navigation.top, content.code.copy, content.tabs.link, search.highlight]
   icon: { repo: fontawesome/brands/github }
 markdown_extensions:
@@ -33,26 +33,28 @@ markdown_extensions:
       custom_fences:
         - { name: mermaid, class: mermaid, format: !!python/name:pymdownx.superfences.fence_code_format }
 nav:
-  - Início: index.md
-  - Primeiros passos:
-      - Instalação: instalacao.md
-      - Simulação em 5 minutos: tutorial/01-simulacao.md
+  - Home: index.md
+  - Getting started:
+      - Installation: installation.md
+      - Simulation in 5 minutes: tutorial/01-simulation.md
   - Tutorial:
-      - 1. Simulação (sem ROS): tutorial/01-simulacao.md
+      - 1. Simulation (without ROS): tutorial/01-simulation.md
       - 2. ROS 2 + RViz: tutorial/02-ros2.md
-      - 3. Firmware e primeiro voo: tutorial/03-firmware.md
-      - 4. Voo real com captura de movimento: tutorial/04-voo-real.md
-      - 5. Enxame: tutorial/05-enxame.md
-      - 6. Genesis e aprendizado por reforço: tutorial/06-genesis.md
-      - 7. Escrevendo seu próprio controlador: tutorial/07-controlador.md
-  - Referência:
-      - Arquitetura: arquitetura.md
-      - Escolha do middleware: middleware.md
-      - Protocolo Zenoh: protocolo.md
-      - API ROS 2: ros-api.md
-      - Hardware e modelo 3D: hardware.md
-      - Simulação: simulacao.md
+      - 3. Firmware and first flight: tutorial/03-firmware.md
+      - 4. Real flight with motion capture: tutorial/04-real-flight.md
+      - 5. Swarm: tutorial/05-swarm.md
+      - 6. Genesis and reinforcement learning: tutorial/06-genesis.md
+      - 7. Writing your own controller: tutorial/07-controller.md
+  - 3D viewer: viewer/index.html
+  - Reference:
+      - Architecture: architecture.md
+      - Middleware choice: middleware.md
+      - Zenoh protocol: protocol.md
+      - ROS 2 API: ros-api.md
+      - Motion capture (OptiTrack): mocap.md
+      - Hardware and 3D model: hardware.md
+      - Simulation: simulation.md
       - Firmware: firmware.md
-      - Segurança de voo: seguranca.md
+      - Flight safety: safety.md
   - FAQ: faq.md
-  - Contribuindo: contribuindo.md
+  - Contributing: contributing.md

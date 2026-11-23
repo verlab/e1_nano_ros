@@ -1,10 +1,10 @@
 **E1 Nano ROS**
 - [[Home]]
-- [[Primeiros passos|Primeiros-passos]]
+- [[Getting started|Getting-started]]
 - [[Tutorial]]
 - [[Firmware]]
-- [[Voo real|Voo-real]]
-- [[Arquitetura]]
-- [[Referência rápida|Referencia]]
-- [[Problemas]]
-- [Site da documentação](https://verlab.github.io/e1_nano_ros/)
+- [[Real flight|Real-flight]]
+- [[Architecture]]
+- [[Quick reference|Reference]]
+- [[Troubleshooting]]
+- [Documentation site](https://verlab.github.io/e1_nano_ros/)

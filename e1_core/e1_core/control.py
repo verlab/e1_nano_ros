@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .math3d import quat_from_thrust_dir
+from .math3d import qmul, quat_from_thrust_dir, wrap, yaw_quat
 
 G = 9.81
 
@@ -167,3 +167,37 @@ def separation_acc(i, positions: dict, d_min=0.25, gain=3.0, z_scale=0.5):
             acc += gain * (d_min - n) / d_min * d / n * 9.81 * 0.3
     acc[2] *= z_scale
     return acc
+
+
+class YawAlign:
+    """Map attitude commands from the mocap world frame into the firmware's own frame.
+
+    The E1 Nano has no magnetometer, so the onboard yaw estimate starts at an arbitrary
+    heading and drifts. The ground controller computes commands with the mocap yaw, but the
+    firmware tracks them against its own estimate. ``YawAlign`` estimates the heading offset
+    ``d = yaw_firmware - yaw_mocap`` (low-pass filtered on the circle) and returns
+    ``Rz(d) * q_cmd``, so the commanded tilt direction and heading are correct in the firmware frame.
+    """
+
+    def __init__(self, tau=0.5):
+        self.tau = tau
+        self.offset = None            # rad, None until both yaws were seen
+        self._t = None
+
+    def reset(self):
+        self.offset, self._t = None, None
+
+    def update(self, t, yaw_firmware, yaw_mocap):
+        d = wrap(yaw_firmware - yaw_mocap)
+        if self.offset is None or self._t is None:
+            self.offset = d
+        else:
+            a = min(1.0, max(t - self._t, 0.0) / self.tau) if self.tau > 0 else 1.0
+            self.offset = wrap(self.offset + a * wrap(d - self.offset))
+        self._t = t
+        return self.offset
+
+    def apply(self, q):
+        if self.offset is None:
+            return np.asarray(q, float)
+        return qmul(yaw_quat(self.offset), q)

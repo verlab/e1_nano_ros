@@ -30,6 +30,7 @@ COPY e1_msgs       src/e1_nano_ros/e1_msgs
 COPY e1_description src/e1_nano_ros/e1_description
 COPY e1_bridge     src/e1_nano_ros/e1_bridge
 COPY e1_control    src/e1_nano_ros/e1_control
+COPY e1_mocap      src/e1_nano_ros/e1_mocap
 COPY e1_bringup    src/e1_nano_ros/e1_bringup
 COPY examples      src/e1_nano_ros/examples
 

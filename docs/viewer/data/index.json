@@ -1,0 +1,38 @@
+[
+ {
+  "name": "mujoco_swarm6",
+  "title": "Six-drone swarm",
+  "backend": "MuJoCo",
+  "drones": 6,
+  "duration": 28.5,
+  "description": "Takeoff, two-level grid, rotating circle and landing. Every drone runs the CF-Drone firmware model and is closed through the ground position controller with inter-drone separation.",
+  "file": "data/mujoco_swarm6.json"
+ },
+ {
+  "name": "mujoco_square",
+  "title": "Square, one drone",
+  "backend": "MuJoCo",
+  "drones": 1,
+  "duration": 24.47,
+  "description": "0.6 m square at 0.4 m, 2.5 s per side, minimum-jerk segments.",
+  "file": "data/mujoco_square.json"
+ },
+ {
+  "name": "mujoco_yaw_align",
+  "title": "Heading alignment (mocap vs. onboard yaw)",
+  "backend": "MuJoCo",
+  "drones": 2,
+  "duration": 21.03,
+  "description": "Both drones start with a 25 deg onboard heading error and 1 deg/s drift (no magnetometer). Drone 1: commands rotated by YawAlign. Drone 2: raw mocap-frame commands.",
+  "file": "data/mujoco_yaw_align.json"
+ },
+ {
+  "name": "genesis_square",
+  "title": "Square, one drone (Genesis)",
+  "backend": "Genesis",
+  "drones": 1,
+  "duration": 23.73,
+  "description": "Same mission and controller as the MuJoCo square, on the Genesis rigid-body backend.",
+  "file": "data/genesis_square.json"
+ }
+]
