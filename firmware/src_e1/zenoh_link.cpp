@@ -22,6 +22,7 @@
 #include <zenoh-pico.h>
 #include "vector.h"
 #include "quaternion.h"
+extern float t, dt;   // CF-Drone time globals, used inline by pid.h
 #include "pid.h"
 #include "e1_protocol.h"
 #include "e1_zenoh_link.h"

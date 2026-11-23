@@ -14,6 +14,7 @@ import threading
 import time
 
 import rclpy
+from rcl_interfaces.msg import ParameterDescriptor
 from e1_core.mocap.frames import PoseFilter, to_z_up
 from e1_core.mocap.natnet import NatNetClient, Version
 from e1_core.mocap.relay import drone_id
@@ -34,9 +35,13 @@ class NatNetNode(Node):
                         by_id=False, namespace_prefix='e1_', topic='mocap/pose', world_frame='world', publish_tf=False,
                         rate=120.0)
         for k, v in defaults.items():
-            self.declare_parameter(k, v)
+            # YAML 1.1 reads a bare `y` as true: let up_axis take any type and normalise it below
+            desc = ParameterDescriptor(dynamic_typing=True) if k == 'up_axis' else ParameterDescriptor()
+            self.declare_parameter(k, v, desc)
         g = lambda k: self.get_parameter(k).value
-        self.prefix, self.topic, self.world, self.up = g('namespace_prefix'), g('topic'), g('world_frame'), g('up_axis')
+        up = g('up_axis')
+        self.up = 'y' if up is True or str(up).lower() == 'y' else 'z'
+        self.prefix, self.topic, self.world = g('namespace_prefix'), g('topic'), g('world_frame')
         self.pattern = None if g('by_id') else re.compile(g('name_pattern'))
         self.min_dt = 1.0 / g('rate') if g('rate') > 0 else 0.0
         self.pubs, self.filters, self.t_sent, self.seen = {}, {}, {}, {}

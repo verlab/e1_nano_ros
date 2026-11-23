@@ -7,7 +7,7 @@ e1_mocap:
     command_port: 1510
     data_port: 1511
     natnet_version: ""            # "" = ask Motive; e.g. "4.1" to force
-    up_axis: "z"                  # Motive streaming "Up Axis": z (recommended) or y (Motive default)
+    up_axis: "z"                  # Motive streaming "Up Axis": "z" (recommended) or "y" (Motive default); quote it
     name_pattern: "e1_(\\d+)"     # rigid body name -> drone id (group 1)
     by_id: false                  # true: use the Motive streaming id as the drone id
     namespace_prefix: "e1_"
