@@ -30,6 +30,7 @@ import time
 import rclpy
 from e1_core import protocol as P
 from e1_core.client import connect
+from e1_core.mocap.frames import PoseFilter
 from e1_msgs.msg import AttitudeTarget, FlightState, ManualControl, MotorCommand, SwarmStatus
 from e1_msgs.srv import Console, SetMode, SetParam
 from geometry_msgs.msg import PoseStamped, TransformStamped
@@ -58,6 +59,7 @@ class DroneBridge:
         self.last_seen = 0.0
         self.rotor_angle = [0.0] * 4
         self.last_js = time.monotonic()
+        self.mocap_filter = PoseFilter()   # velocity for mocap poses (PoseStamped carries none)
         mk = node.create_publisher
         self.p_state = mk(FlightState, f'{self.ns}/state', 10)
         self.p_imu = mk(Imu, f'{self.ns}/imu', SENSOR_QOS)
@@ -186,7 +188,12 @@ class DroneBridge:
     def on_mocap(self, m: PoseStamped):
         seq, t = self._cmd_meta()
         p, q = m.pose.position, m.pose.orientation
-        self.put('pose', P.Pose((p.x, p.y, p.z), (q.w, q.x, q.y, q.z), (math.nan,) * 3, seq, t).encode())
+        stamp = m.header.stamp.sec + m.header.stamp.nanosec * 1e-9 or time.monotonic()
+        out = self.mocap_filter.update(stamp, (p.x, p.y, p.z), (q.w, q.x, q.y, q.z))
+        if out is None:                 # outlier or out-of-order sample
+            return
+        pos, quat, vel = out
+        self.put('pose', P.Pose(tuple(map(float, pos)), tuple(map(float, quat)), tuple(map(float, vel)), seq, t).encode())
 
     def on_motors(self, m: MotorCommand):
         seq, t = self._cmd_meta()
