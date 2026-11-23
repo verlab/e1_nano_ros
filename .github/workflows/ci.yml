@@ -102,6 +102,9 @@ jobs:
         with: { path: ~/.platformio, key: 'pio-${{ hashFiles(''firmware/platformio.ini'') }}' }
       - run: pip install platformio esptool && sudo apt-get install -y cmake
       - if: matrix.env == 'e1_nano'
+        uses: actions/cache@v4
+        with: { path: /tmp/zenoh-pico-1.10.1, key: zenoh-pico-1.10.1-host }
+      - if: matrix.env == 'e1_nano'
         run: firmware/test/host_check/run.sh 1.10.1
       - run: cd firmware && pio run -e ${{ matrix.env }}
       - run: firmware/tools/merge_bin.sh ${{ matrix.env }} dist
