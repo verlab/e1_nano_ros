@@ -15,5 +15,5 @@ bool armed, landed, imuOK;
 int mode, wifiMode;
 Preferences storage;
 PID rollRatePID(1,0,0), pitchRatePID(1,0,0), yawRatePID(1,0,0), rollPID(1,0,0), pitchPID(1,0,0), yawPID(1,0,0);
-#include "zenoh_link.ino"
+#include "zenoh_link.cpp"
 int main() { setupZenohLink(); zenohLinkApply(); zenohLinkSnapshot(); zenohLinkLog("x"); String a("zn"), b, c; zenohLinkCommand(a, b, c); }

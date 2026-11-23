@@ -2,7 +2,7 @@
 
 CF-Drone is used unmodified as a git submodule (external/CF-Drone). Two variants:
 
-* Zenoh (``custom_e1_zenoh = yes``, default): copies CF-Drone, adds src_e1/ and inserts five
+* Zenoh (``custom_e1_zenoh = yes``, default): copies CF-Drone, adds src_e1/, one include and five
   one-line hooks.
 * Stock (``custom_e1_zenoh = no``): CF-Drone exactly as upstream (MAVLink / web RC / console).
  Every anchor is checked, so a CF-Drone update
@@ -25,8 +25,13 @@ CF = os.path.join(PROJ, 'external', 'CF-Drone')
 OUT = os.path.join(PROJ, '.e1_src')
 E1 = os.path.join(PROJ, 'src_e1')
 
+# Forward declarations PlatformIO's .ino -> .cpp converter misses (functions returning pointers).
+# Needed by the stock build too; harmless with the Arduino IDE.
+PROTOTYPES = {'mavlink.ino': 'const char *getParameterName(int index);  // E1: missing prototype (parameters.ino)\n'}
+
 PATCHES = {
     'CF-Drone.ino': [
+        ('#include "board_config.h"', '#include "board_config.h"\n#include "e1_zenoh_link.h" // E1 Zenoh link'),
         ('\tsetupRC();', '\tsetupRC();\n\tsetupZenohLink(); // E1 Zenoh link'),
         ('\treadRC();', '\treadRC();\n\tzenohLinkApply(); // E1 Zenoh link: apply received commands'),
         ('\tsendMotors();', '\tsendMotors();\n\tzenohLinkSnapshot(); // E1 Zenoh link: telemetry snapshot'),
@@ -50,6 +55,12 @@ def main():
             shutil.copytree(src, os.path.join(OUT, 'drivers'))
         elif name.endswith(('.ino', '.h', '.cpp')):
             shutil.copy2(src, OUT)
+    for fname, decl in PROTOTYPES.items():
+        path = os.path.join(OUT, fname)
+        with open(path, encoding='utf-8') as f:
+            src = f.read()
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(decl + src)
     if not ZENOH:
         print(f'[e1] stock CF-Drone sources assembled in {OUT}')
         return

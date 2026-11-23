@@ -88,7 +88,7 @@ python3 examples/swarm_formation.py --n 6
 ### Real drones with OptiTrack
 
 ```bash
-# 1. firmware (or flash a release binary: esptool.py --chip esp32s3 write_flash 0x0 e1_nano-merged.bin)
+# 1. firmware (or flash a release binary: esptool --chip esp32s3 write-flash 0x0 e1_nano-merged.bin)
 cd firmware && pio run -e e1_nano -t upload
 #    in the drone console:  sta <ssid> <password> ; p WIFI_MODE 2 ; zn id 1 ; zn connect tcp/<pc-ip>:7447 ; reboot
 # 2. Motive: one rigid body per drone named e1_<id>, Up axis = Z, streaming on
@@ -108,7 +108,7 @@ Before the first flight, read [Motion capture](docs/mocap.md) and [Flight safety
 | `e1_nano_stock` | ESP32-S3 SuperMini | upstream CF-Drone: phone/web RC, MAVLink |
 | `e1_mini`, `e1_mini_stock` | classic ESP32 (E1 MINI) | same two variants |
 
-CF-Drone stays unmodified as a git submodule. `firmware/tools/prepare_src.py` adds the Zenoh link through five
+CF-Drone stays unmodified as a git submodule. `firmware/tools/prepare_src.py` adds the Zenoh link through one include and five
 anchored one-line hooks and fails the build if an upstream change moves an anchor. See [Firmware](docs/firmware.md).
 
 ## Interface (summary)

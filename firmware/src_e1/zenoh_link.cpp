@@ -20,7 +20,17 @@
 #include <WiFi.h>
 #include <Preferences.h>
 #include <zenoh-pico.h>
+#include "vector.h"
+#include "quaternion.h"
+#include "pid.h"
 #include "e1_protocol.h"
+#include "e1_zenoh_link.h"
+
+// CF-Drone functions used by the link (defined in the .ino files)
+void print(const char *format, ...);
+void doCommand(String str, bool echo);
+bool setParameter(const char *name, const float value);
+void descend();
 
 #ifndef E1_ZENOH_DEFAULT_LOCATOR
 #define E1_ZENOH_DEFAULT_LOCATOR "tcp/192.168.1.100:7447"

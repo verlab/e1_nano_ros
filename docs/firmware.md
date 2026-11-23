@@ -4,7 +4,7 @@ The flight firmware is the original **CF-Drone** (Cherglow, `external/CF-Drone`,
 at commit `83ebe61`), with no changes to its source code. The `src_e1/` folder adds the **E1 Zenoh link**
 (zenoh-pico 1.10.1), which places the drone directly on the Zenoh network used by ROS 2
 (`rmw_zenoh_cpp`). The script `tools/prepare_src.py` copies CF-Drone into `.e1_src/`, adds
-`src_e1/` and inserts five one-line hooks (each located by an anchor and verified):
+`src_e1/`, includes `e1_zenoh_link.h` and inserts five one-line hooks (each located by an anchor and verified):
 
 | file           | hook                       | purpose                                                   |
 |----------------|----------------------------|-----------------------------------------------------------|
@@ -41,7 +41,7 @@ Flashing a release binary without PlatformIO (merged image, offset 0):
 
 ```bash
 pip install esptool
-esptool.py --chip esp32s3 write_flash 0x0 e1_nano-merged.bin
+esptool --chip esp32s3 write-flash 0x0 e1_nano-merged.bin
 ```
 
 Without PlatformIO installed: `docker compose run --rm firmware pio run` (see `docker/Dockerfile.firmware`).
@@ -49,7 +49,7 @@ zenoh-pico invokes `cmake` during the build (already included in the Docker imag
 
 ## Verification without an ESP32
 
-`test/host_check/run.sh` compiles `zenoh_link.ino` on the PC against the real zenoh-pico (Unix platform) and
+`test/host_check/run.sh` compiles `zenoh_link.cpp` on the PC against the real zenoh-pico (Unix platform) and
 CF-Drone headers, with minimal Arduino/FreeRTOS stubs. It catches API errors without the ESP32 toolchain.
 
 ## Configuration (serial console, Web RC or `e1-cli console`)

@@ -44,7 +44,7 @@ bandwidth per message. We chose:
 * **`e1_bridge` → idiomatic ROS 2** (standard types + `e1_msgs`). It is a single process for the entire swarm,
   on the same Zenoh network, so there is no extra network hop.
 
-Should the drone need to become a "real ROS node" in the future, only the `zenoh_link.ino` module changes.
+Should the drone need to become a "real ROS node" in the future, only the `zenoh_link.cpp` module changes.
 
 ## Versions
 
