@@ -46,6 +46,9 @@ def test_pose_filter_velocity_and_outliers():
     assert f.update(0.02, (2.0, 0, 0), (1, 0, 0, 0)) is None          # 2 m jump in 10 ms: rejected
     _, q, _ = f.update(0.03, (0.03, 0, 0), (-1, 0, 0, 0))
     assert q[0] > 0                                                    # sign continuity
+    # a real displacement (e.g. relabeled rigid body) is accepted after max_rejects samples
+    out = [f.update(0.04 + 0.01 * k, (1.0, 0, 0), (1, 0, 0, 0)) for k in range(6)]
+    assert out[:5] == [None] * 5 and out[5] is not None and np.allclose(out[5][0], (1, 0, 0))
 
 
 def test_client_server_unicast():

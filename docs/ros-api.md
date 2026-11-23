@@ -37,7 +37,7 @@ Parameters: `zenoh_connect`, `ids` (`[0]` = automatic discovery), `namespace_pre
 | srv | `/e1/takeoff_all` · `/e1/land_all` | `Takeoff` · `Land` |
 | pub | `/e1/setpoints` | `visualization_msgs/MarkerArray` |
 
-Parameters: `ids`, `rate`, `mass`, `max_thrust`, `kp`, `kd`, `ki`, `tilt_max_deg`, `min_separation`, `align_yaw`
+Parameters: `ids`, `rate`, `mass`, `max_thrust`, `kp`, `kd`, `ki`, `tilt_max_deg`, `min_separation`, `align_yaw`, `pose_timeout`
 (`e1_control/config/controller.yaml`).
 
 ## e1_mocap (OptiTrack NatNet)

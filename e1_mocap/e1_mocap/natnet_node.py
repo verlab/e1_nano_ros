@@ -43,8 +43,7 @@ class NatNetNode(Node):
         self.up = 'y' if up is True or str(up).lower() == 'y' else 'z'
         self.prefix, self.topic, self.world = g('namespace_prefix'), g('topic'), g('world_frame')
         self.pattern = None if g('by_id') else re.compile(g('name_pattern'))
-        self.min_dt = 1.0 / g('rate') if g('rate') > 0 else 0.0
-        self.pubs, self.filters, self.t_sent, self.seen = {}, {}, {}, {}
+        self.pubs, self.filters, self.t_sent, self.seen, self.latest = {}, {}, {}, {}, {}
         self.lock = threading.Lock()
         self.tf = TransformBroadcaster(self) if g('publish_tf') else None
         self.status = self.create_publisher(String, '/e1/mocap/status', 10)
@@ -60,11 +59,12 @@ class NatNetNode(Node):
         if not ok:
             self.get_logger().warn('Motive did not answer NAT_CONNECT; check IPs, firewall and that streaming is on')
         self.frames0 = 0
+        self.create_timer(1.0 / max(g('rate'), 1.0), self.publish)
         self.create_timer(1.0, self.report)
         self.create_timer(5.0, lambda: self.client.refresh_names(0.5))
 
     def on_frame(self, frame, bodies, t):
-        stamp = self.get_clock().now().to_msg()
+        """NatNet thread: keep only the newest valid pose per drone; publishing happens in the executor."""
         with self.lock:
             for b in bodies:
                 did = drone_id(b, self.pattern)
@@ -76,24 +76,31 @@ class NatNetNode(Node):
                 pos, quat = to_z_up(b.pos, b.quat, self.up)
                 if self.filters.setdefault(did, PoseFilter()).update(t, pos, quat) is None:
                     continue
-                if t - self.t_sent.get(did, -1e9) < self.min_dt:
-                    continue
-                self.t_sent[did] = t
-                if did not in self.pubs:
-                    self.pubs[did] = self.create_publisher(PoseStamped, f'/{self.prefix}{did}/{self.topic}', SENSOR_QOS)
-                    self.get_logger().info(f'tracking {b.name or b.id} -> /{self.prefix}{did}/{self.topic}')
-                m = PoseStamped()
-                m.header.stamp, m.header.frame_id = stamp, self.world
-                m.pose.position.x, m.pose.position.y, m.pose.position.z = map(float, pos)
-                m.pose.orientation.w, m.pose.orientation.x, m.pose.orientation.y, m.pose.orientation.z = map(float, quat)
-                self.pubs[did].publish(m)
-                if self.tf:
-                    tr = TransformStamped()
-                    tr.header = m.header
-                    tr.child_frame_id = f'{self.prefix}{did}/mocap'
-                    tr.transform.translation.x, tr.transform.translation.y, tr.transform.translation.z = map(float, pos)
-                    tr.transform.rotation = m.pose.orientation
-                    self.tf.sendTransform(tr)
+                self.latest[did] = (t, pos, quat, b.name or str(b.id))
+
+    def publish(self):
+        """Executor thread (timer at `rate` Hz): publish each pose that is new since the last tick."""
+        with self.lock:
+            fresh = {d: v for d, v in self.latest.items() if v[0] > self.t_sent.get(d, -1.0)}
+            for d, v in fresh.items():
+                self.t_sent[d] = v[0]
+        stamp = self.get_clock().now().to_msg()
+        for did, (_, pos, quat, name) in fresh.items():
+            if did not in self.pubs:
+                self.pubs[did] = self.create_publisher(PoseStamped, f'/{self.prefix}{did}/{self.topic}', SENSOR_QOS)
+                self.get_logger().info(f'tracking {name} -> /{self.prefix}{did}/{self.topic}')
+            m = PoseStamped()
+            m.header.stamp, m.header.frame_id = stamp, self.world
+            m.pose.position.x, m.pose.position.y, m.pose.position.z = map(float, pos)
+            m.pose.orientation.w, m.pose.orientation.x, m.pose.orientation.y, m.pose.orientation.z = map(float, quat)
+            self.pubs[did].publish(m)
+            if self.tf:
+                tr = TransformStamped()
+                tr.header = m.header
+                tr.child_frame_id = f'{self.prefix}{did}/mocap'
+                tr.transform.translation.x, tr.transform.translation.y, tr.transform.translation.z = map(float, pos)
+                tr.transform.rotation = m.pose.orientation
+                self.tf.sendTransform(tr)
 
     def report(self):
         now, n = time.monotonic(), self.client.stats.frames

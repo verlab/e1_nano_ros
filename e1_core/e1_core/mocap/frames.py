@@ -36,10 +36,11 @@ def from_z_up(pos, quat_wxyz, up_axis='z'):
 class PoseFilter:
     """Velocity by filtered finite differences, quaternion sign continuity and outlier rejection."""
 
-    def __init__(self, alpha=0.35, max_jump=0.3, max_dt=0.2):
-        self.alpha, self.max_jump, self.max_dt = alpha, max_jump, max_dt
+    def __init__(self, alpha=0.35, max_jump=0.3, max_dt=0.2, max_rejects=5):
+        self.alpha, self.max_jump, self.max_dt, self.max_rejects = alpha, max_jump, max_dt, max_rejects
         self.t = self.p = self.q = None
         self.v = np.zeros(3)
+        self.rejects = 0              # consecutive rejected jumps; after max_rejects the filter resyncs
 
     def update(self, t, pos, quat):
         """Return (pos, quat, vel) or None if the sample is rejected as an outlier."""
@@ -50,11 +51,13 @@ class PoseFilter:
             dt = t - self.t
             if dt <= 0:
                 return None
-            if dt < self.max_dt:
-                if np.linalg.norm(pos - self.p) > self.max_jump:
-                    return None
+            if dt < self.max_dt and np.linalg.norm(pos - self.p) > self.max_jump and self.rejects < self.max_rejects:
+                self.rejects += 1
+                return None
+            if dt < self.max_dt and self.rejects < self.max_rejects:
                 self.v = (1 - self.alpha) * self.v + self.alpha * (pos - self.p) / dt
             else:
-                self.v = np.zeros(3)
+                self.v = np.zeros(3)          # gap or persistent jump: restart from this sample
+        self.rejects = 0
         self.t, self.p, self.q = t, pos, quat
         return pos, quat, self.v.copy()

@@ -37,6 +37,7 @@ class Vehicle:
         self.pos = self.vel = None
         self.quat = (1.0, 0.0, 0.0, 0.0)
         self.fw_yaw = None            # onboard heading estimate (from FlightState)
+        self.t_pose = -1e9            # node time of the last pose
         self.yaw_align = YawAlign() if node.align_yaw else None
         self.battery = 4.2
         self.mode = IDLE
@@ -55,6 +56,7 @@ class Vehicle:
 
     # ------------------------------------------------------------ inputs
     def on_pose(self, m):
+        self.t_pose = self.n.now()
         p = m.pose.position
         q = m.pose.orientation
         self.pos = np.array([p.x, p.y, p.z])
@@ -133,6 +135,11 @@ class Vehicle:
     def tick(self, t, dt, others):
         if self.mode == IDLE or self.pos is None or self.traj is None:
             return None
+        if t - self.t_pose > self.n.pose_timeout:
+            # stale pose (mocap lost the drone): stop commanding; the firmware descends after ZN_CMD_TIMEOUT
+            self.n.get_logger().warn(f'e1_{self.id}: no pose for {t - self.t_pose:.2f} s, commands paused',
+                                     throttle_duration_sec=1.0)
+            return None
         p, v, a = self.traj(t)
         if self.mode == LANDING and (t > self.t_land_end and self.pos[2] < 0.04):
             self.send((1.0, 0.0, 0.0, 0.0), 0.0)    # thrust 0 = disarm
@@ -164,9 +171,11 @@ class SwarmController(Node):
         dp('mass', 0.0251); dp('max_thrust', 0.216); dp('kp', [4.0, 4.0, 5.0]); dp('kd', [3.0, 3.0, 3.5])
         dp('ki', [0.4, 0.4, 1.2]); dp('tilt_max_deg', 25.0); dp('min_separation', 0.25)
         dp('align_yaw', True)     # rotate commands by (firmware yaw - mocap yaw); see e1_core.control.YawAlign
+        dp('pose_timeout', 0.25)  # s without a pose -> stop sending commands (firmware failsafe takes over)
         g = lambda k: self.get_parameter(k).value
         self.prefix, self.world, self.rate, self.min_sep = g('namespace_prefix'), g('world_frame'), g('rate'), g('min_separation')
         self.align_yaw = bool(g('align_yaw'))
+        self.pose_timeout = float(g('pose_timeout'))
         self.model = VehicleModel(g('mass'), g('max_thrust'))
         self.gains = Gains(np.array(g('kp')), np.array(g('kd')), np.array(g('ki')), tilt_max=math.radians(g('tilt_max_deg')))
         self.v: dict[int, Vehicle] = {}
