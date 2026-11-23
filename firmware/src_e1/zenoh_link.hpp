@@ -19,10 +19,13 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Preferences.h>
+// Implementation of the E1 Zenoh link. prepare_src.py includes this file at the end of
+// CF-Drone.ino, so it shares the sketch's translation unit (CF-Drone headers such as vector.h
+// define non-inline functions and cannot be compiled twice) and PlatformIO does not generate
+// prototypes for it (zenoh-pico types would be used before <zenoh-pico.h>).
 #include <zenoh-pico.h>
 #include "vector.h"
 #include "quaternion.h"
-extern float t, dt;   // CF-Drone time globals, used inline by pid.h
 #include "pid.h"
 #include "e1_protocol.h"
 #include "e1_zenoh_link.h"

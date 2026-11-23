@@ -1,6 +1,6 @@
 # Firmware
 
-CF-Drone by Cherglow (submodule, unmodified) + **E1 Zenoh link** (`firmware/src_e1/zenoh_link.cpp`, zenoh-pico 1.10.1).
+CF-Drone by Cherglow (submodule, unmodified) + **E1 Zenoh link** (`firmware/src_e1/zenoh_link.hpp`, zenoh-pico 1.10.1).
 
 | Console command | Effect |
 |---|---|

@@ -78,6 +78,8 @@ def main():
             extra = repl.split('\n', 1)[1]          # the hook line(s) to insert after the anchor line
             lines.insert(hits[0] + 1, extra)
         s = '\n'.join(lines)
+        if fname == 'CF-Drone.ino':
+            s += '\n\n#include "zenoh_link.hpp" // E1 Zenoh link implementation (same translation unit)\n'
         with open(path, 'w', encoding='utf-8') as f:
             f.write(s)
     print(f'[e1] CF-Drone + E1 Zenoh link sources assembled in {OUT}')
