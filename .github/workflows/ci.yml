@@ -66,7 +66,11 @@ jobs:
           ros2 service call /e1/takeoff_all e1_msgs/srv/Takeoff "{height: 0.4, duration: 2.0}"
           sleep 5
           python3 src/e1_nano_ros/.github/check_altitude.py 1 2
-          kill %2 %3 %4 || true
+      - name: stop the first smoke test (ros2 run does not forward signals to its child)
+        run: |
+          pkill -f 'e1-sim|e1_bridge|swarm_controller' || true
+          sleep 2
+          ! pgrep -f 'e1-sim|e1_bridge|swarm_controller'
       - name: smoke test (fake OptiTrack -> e1_mocap -> bridge, 60 deg heading error)
         shell: bash
         run: |
