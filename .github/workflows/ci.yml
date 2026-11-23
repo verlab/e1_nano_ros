@@ -70,7 +70,9 @@ jobs:
         run: |
           pkill -f 'e1-sim|e1_bridge|swarm_controller' || true
           sleep 2
-          ! pgrep -f 'e1-sim|e1_bridge|swarm_controller'
+          pkill -9 -f 'e1-sim|e1_bridge|swarm_controller' || true
+          sleep 1
+          ps -eo pid,args | grep -E 'e1-sim|e1_bridge|swarm_controller' | grep -v grep || echo 'all stopped'
       - name: smoke test (fake OptiTrack -> e1_mocap -> bridge, 60 deg heading error)
         shell: bash
         run: |
