@@ -37,8 +37,7 @@ COPY examples      src/e1_nano_ros/examples
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     rosdep update --rosdistro ${ROS_DISTRO} >/dev/null 2>&1 || true && \
     rosdep install --from-paths src --ignore-src -y --skip-keys "e1_core" >/dev/null 2>&1 || true && \
-    colcon build --symlink-install --event-handlers console_direct- && \
-    rm -rf build log
+    colcon build --symlink-install --event-handlers console_direct-
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh && echo "source /ws/install/setup.bash" >> /root/.bashrc

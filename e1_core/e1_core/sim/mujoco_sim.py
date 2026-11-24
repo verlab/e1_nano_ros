@@ -72,6 +72,57 @@ def build_swarm_xml(positions, base_xml=None, floor=True):
     return ET.tostring(root, encoding='unicode')
 
 
+def build_cargo_xml(positions, base_xml=None, box_mass=0.1, tether_length=0.3, floor=True):
+    """Build a four-drone scene with a free box and unilateral, length-limited tethers."""
+    if len(positions) != 4:
+        raise ValueError('the cargo scene requires exactly four drones')
+    if not math.isfinite(box_mass) or box_mass <= 0:
+        raise ValueError('box_mass must be a positive finite value')
+    if not math.isfinite(tether_length) or tether_length <= 0:
+        raise ValueError('tether_length must be a positive finite value')
+
+    root = ET.fromstring(build_swarm_xml(positions, base_xml=base_xml, floor=floor))
+    world = root.find('worldbody')
+    tendons = ET.Element('tendon')
+    root.insert(list(root).index(world) + 1, tendons)
+    payload_sites = []
+    quadrants = set()
+    half_box = 0.06
+    for did, xyz, _ in positions:
+        sx = 1 if xyz[0] >= 0 else -1
+        sy = 1 if xyz[1] >= 0 else -1
+        if (sx, sy) in quadrants:
+            raise ValueError('cargo scene drones must occupy the four grid quadrants')
+        quadrants.add((sx, sy))
+
+        prefix = f'd{did}_'
+        drone = world.find(f"body[@name='{prefix}base_link']")
+        ET.SubElement(drone, 'site', name=prefix + 'tether_attach', pos='0 0 0.004', size='0.003',
+                      rgba='0.95 0.65 0.15 1')
+        payload_sites.append((did, sx, sy))
+    if len(quadrants) != 4:
+        raise ValueError('cargo scene drones must occupy the four grid quadrants')
+
+    box = ET.SubElement(world, 'body', name='payload', pos='0 0 0.041')
+    ET.SubElement(box, 'freejoint', name='payload_root')
+    ET.SubElement(box, 'inertial', pos='0 0 0', mass=f'{box_mass:g}',
+                  diaginertia=f'{box_mass * (0.12**2 + 0.08**2) / 12:g} '
+                              f'{box_mass * (0.12**2 + 0.08**2) / 12:g} '
+                              f'{box_mass * (0.12**2 + 0.12**2) / 12:g}')
+    ET.SubElement(box, 'geom', name='payload_box', type='box', size='0.06 0.06 0.04',
+                  rgba='0.75 0.42 0.18 1', mass='0')
+    for did, sx, sy in payload_sites:
+        site_name = f'payload_attach_{did}'
+        ET.SubElement(box, 'site', name=site_name, pos=f'{sx * half_box:g} {sy * half_box:g} 0.035',
+                      size='0.003', rgba='0.95 0.65 0.15 1')
+        tendon = ET.SubElement(tendons, 'spatial', name=f'tether_{did}', width='0.002',
+                               rgba='0.95 0.65 0.15 1', limited='true',
+                               range=f'0 {tether_length:g}')
+        ET.SubElement(tendon, 'site', site=f'd{did}_tether_attach')
+        ET.SubElement(tendon, 'site', site=site_name)
+    return ET.tostring(root, encoding='unicode')
+
+
 def layout(n, kind='grid', spacing=0.5, z=None):
     """Default start positions on the floor."""
     out = []
@@ -129,11 +180,16 @@ class SwarmSim:
     """N E1 Nano drones in one MuJoCo world."""
 
     def __init__(self, n=1, ids=None, kind='grid', spacing=0.5, starts=None, fw_rate=500.0, seed=0,
-                 gyro_noise=0.01, acc_noise=0.05, yaw_offset=0.0, yaw_drift=0.0):
+                 gyro_noise=0.01, acc_noise=0.05, yaw_offset=0.0, yaw_drift=0.0,
+                 cargo_mass=None, tether_length=0.3):
         ids = list(ids or range(1, n + 1))
         starts = starts or layout(len(ids), kind, spacing)
         self.z0 = 0.0198
-        self.xml = build_swarm_xml([(i, (x, y, self.z0), 0.0) for i, (x, y) in zip(ids, starts)])
+        positions = [(i, (x, y, self.z0), 0.0) for i, (x, y) in zip(ids, starts)]
+        if cargo_mass is None:
+            self.xml = build_swarm_xml(positions)
+        else:
+            self.xml = build_cargo_xml(positions, box_mass=cargo_mass, tether_length=tether_length)
         self.model = mujoco.MjModel.from_xml_string(self.xml)
         self.data = mujoco.MjData(self.model)
         self.dt = self.model.opt.timestep

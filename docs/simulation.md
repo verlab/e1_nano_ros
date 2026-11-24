@@ -19,6 +19,35 @@ e1-sim -n 3 --record flight.mp4 --duration 30
 e1-sim -n 1 --speed 0          # as fast as possible (≈12× real time for 1 drone on a laptop)
 ```
 
+## Suspended cargo (MuJoCo)
+
+The optional `cargo` scene adds a 10 g free box and four physical tethers, each with a maximum length of
+30 cm. The tethers are unilateral constraints: they pull when taut and go slack otherwise. The existing
+swarm scene remains the default; the cargo scene currently requires exactly four drones in a grid layout
+and is not supported by the Genesis backend.
+
+On Linux with the Docker demo image built and X11 access enabled:
+
+```bash
+docker compose build sim
+xhost +local:docker
+E1_N=4 docker compose up -d router bridge controller
+E1_N=4 docker compose run --rm \
+  -e DISPLAY="$DISPLAY" \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  sim ros2 run e1_core e1-sim -n 4 --scene cargo --layout grid --viewer
+```
+
+In another terminal, ask the swarm controller to lift and then land the drones:
+
+```bash
+docker compose run --rm tools ros2 service call /e1/takeoff_all e1_msgs/srv/Takeoff "{height: 1.5, duration: 10.0}"
+docker compose run --rm tools ros2 service call /e1/land_all e1_msgs/srv/Land "{duration: 3.0}"
+```
+
+The built-in formation mission is intentionally omitted: it moves drones apart and is not designed for
+the shared cargo. Adjust the load and tether length with `--box-mass` and `--tether-length`, respectively.
+
 ## Genesis
 
 `--backend genesis [--device gpu|cpu]`. Same firmware and same protocol. See [tutorial 6](tutorial/06-genesis.md).

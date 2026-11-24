@@ -5,6 +5,7 @@ Examples
     e1-sim -n 4                                  # 4 drones, connect to a router on localhost:7447
     e1-sim -n 1 --mode peer --listen tcp/0.0.0.0:7447   # standalone, no router needed
     e1-sim -n 6 --layout circle --viewer          # MuJoCo viewer (needs a display)
+    e1-sim -n 4 --scene cargo --viewer           # four drones lifting a shared box
     e1-sim -n 3 --record swarm.mp4 --duration 30  # headless video
     e1-sim -n 2 --natnet 127.0.0.1 --yaw-offset 60   # emulate OptiTrack: poses only via NatNet (use e1-mocap)
 """
@@ -24,6 +25,10 @@ def main(argv=None):
     ap.add_argument('--first-id', type=int, default=1)
     ap.add_argument('--layout', choices=['grid', 'line', 'circle'], default='grid')
     ap.add_argument('--spacing', type=float, default=0.5, help='start spacing (m)')
+    ap.add_argument('--scene', choices=['swarm', 'cargo'], default='swarm',
+                    help='MuJoCo scene (cargo requires four drones in grid layout)')
+    ap.add_argument('--box-mass', type=float, default=0.01, help='cargo box mass in kg')
+    ap.add_argument('--tether-length', type=float, default=0.3, help='maximum tether length in m')
     ap.add_argument('--connect', default='tcp/127.0.0.1:7447', help='Zenoh endpoint to connect ("" = none)')
     ap.add_argument('--listen', default=None, help='Zenoh endpoint to listen on (peer mode)')
     ap.add_argument('--mode', default='client', choices=['client', 'peer'])
@@ -48,6 +53,8 @@ def main(argv=None):
 
     ids = list(range(a.first_id, a.first_id + a.num))
     if a.backend == 'genesis':
+        if a.scene == 'cargo':
+            ap.error('--scene cargo is only supported by the MuJoCo backend')
         from .genesis_sim import GenesisSwarm
         sim = GenesisSwarm(ids=ids, kind=a.layout, spacing=a.spacing, backend=a.device, show_viewer=a.viewer)
         a.viewer = False
@@ -55,7 +62,13 @@ def main(argv=None):
             print('[e1-sim] --record is only implemented for the MuJoCo backend', file=sys.stderr)
             a.record = None
     else:
+        if a.scene == 'cargo' and a.num != 4:
+            ap.error('--scene cargo requires exactly four drones (use -n 4)')
+        if a.scene == 'cargo' and a.layout != 'grid':
+            ap.error('--scene cargo requires --layout grid')
         sim = SwarmSim(ids=ids, kind=a.layout, spacing=a.spacing,
+                       cargo_mass=a.box_mass if a.scene == 'cargo' else None,
+                       tether_length=a.tether_length,
                        yaw_offset=math.radians(a.yaw_offset), yaw_drift=math.radians(a.yaw_drift))
     session = connect(a.connect or None, a.mode, a.listen)
     srv = ZenohSimServer(sim, session, speed=a.speed, publish_pose=a.natnet is None)
